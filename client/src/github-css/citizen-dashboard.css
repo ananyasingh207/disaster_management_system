@@ -1,0 +1,7 @@
+.citizen-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  border-left: 5px solid #dc3545;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}

@@ -1,0 +1,327 @@
+/* --- START OF FILE App.css --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+:root {
+  --bg-dark: #0f172a;
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --primary: #38bdf8; /* Default Cyan */
+  --primary-glow: rgba(56, 189, 248, 0.5);
+  --accent: #f472b6;
+  --success: #4ade80;
+  --warning: #facc15;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --radius: 16px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-dark);
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.15), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(244, 114, 182, 0.1), transparent 25%);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* --- THEME OVERRIDES --- */
+
+/* Volunteer Theme (Default Blue/Cyan) */
+.theme-volunteer {
+  /* Inherits root variables */
+}
+
+/* Admin Theme (Amber/Tactical Orange) */
+.theme-admin {
+  --primary: #f59e0b;
+  --primary-glow: rgba(245, 158, 11, 0.4);
+  --accent: #ef4444;
+}
+.theme-admin button {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+.theme-admin .glass-panel {
+  border-color: rgba(245, 158, 11, 0.15);
+}
+.theme-admin .nav-link.active {
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.15) 0%, transparent 100%);
+  color: var(--primary);
+  border-left-color: var(--primary);
+}
+
+/* --- COMPONENTS --- */
+
+/* Glassmorphism Card Utility */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Typography */
+h1, h2, h3 {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+}
+
+h1 { font-size: 2.5rem; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+p { color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; }
+
+/* Buttons */
+button {
+  cursor: pointer;
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: var(--transition);
+  background: linear-gradient(135deg, var(--primary) 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 4px 15px var(--primary-glow);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--primary-glow);
+}
+
+button.secondary {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  box-shadow: none;
+}
+button.secondary:hover { background: rgba(255,255,255,0.05); }
+
+/* Form Elements */
+input, select, textarea {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  color: white;
+  font-family: inherit;
+  margin-bottom: 1rem;
+  transition: var(--transition);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Status Badges */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.badge-available, .badge-open, .badge-low { background: rgba(74, 222, 128, 0.2); color: var(--success); border: 1px solid rgba(74, 222, 128, 0.3); }
+.badge-busy, .badge-progress, .badge-medium { background: rgba(250, 204, 21, 0.2); color: var(--warning); border: 1px solid rgba(250, 204, 21, 0.3); }
+.badge-critical, .badge-high { background: rgba(244, 63, 94, 0.2); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+
+/* Layout Grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+
+/* Navigation */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 1rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 12px;
+  transition: var(--transition);
+  margin-bottom: 0.5rem;
+}
+.nav-link:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.nav-link.active {
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.15) 0%, transparent 100%);
+  color: var(--primary);
+  border-left: 3px solid var(--primary);
+}
+
+.mission-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 1rem;
+}
+
+/* Leaflet Map Fixes */
+.leaflet-container {
+  background: #0f172a !important; 
+  font-family: 'Inter', sans-serif;
+  z-index: 1;
+}
+.leaflet-bar a {
+  background-color: var(--bg-dark) !important;
+  color: var(--primary) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+}
+.leaflet-bar a:hover {
+  background-color: var(--glass-bg) !important;
+  color: #fff !important;
+}
+
+/* --- ADMIN SPECIFIC UTILITIES --- */
+.control-bar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  flex-wrap: wrap;
+}
+
+.selectable-item {
+  padding: 1rem;
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.03);
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.selectable-item:hover {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.selectable-item.active {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: var(--primary); /* Amber */
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+}
+
+.selectable-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--primary);
+}
+
+/* Terminal / Notes Log */
+.terminal-window {
+  background: #050505;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1rem;
+  font-family: 'Courier New', monospace;
+  height: 300px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+}
+
+.terminal-entry {
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.terminal-meta {
+  font-size: 0.7rem;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.terminal-text {
+  font-size: 0.9rem;
+  color: #ddd;
+}
+
+/* Alert Cards */
+.alert-card {
+  padding: 1rem;
+  border-radius: 8px;
+  background: rgba(20, 20, 20, 0.6);
+  border-left: 4px solid var(--glass-border);
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alert-card.active { border-left-color: var(--accent); background: rgba(239, 68, 68, 0.1); }
+.alert-card.expired { border-left-color: #666; opacity: 0.6; }
+
+/* Custom Map Markers */
+.custom-pin {
+  background-color: var(--pin-color);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 15px var(--pin-color);
+  position: relative;
+}
+
+.custom-pin::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background: var(--pin-color);
+  opacity: 0.5;
+  animation: none;
+}
+
+/* Pulsing animation for Critical Alert */
+.pin-pulse::after {
+  animation: pinPulse 1.5s infinite;
+}
+
+@keyframes pinPulse {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+}
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.animate-enter { animation: fadeIn 0.5s ease forwards; }
