@@ -1,24 +1,25 @@
 import { Outlet } from "react-router-dom";
 import AdminNavbar from "../components/AdminNavbar";
+import Footer from "../components/Footer";
 
 export default function AdminLayout() {
   return (
-    <div className="theme-admin" style={{ display: "flex", minHeight: "100vh", overflow: "hidden" }}>
-      {/* Sidebar Container */}
-      <div style={{ width: "280px", flexShrink: 0 }}>
+    // 'flex' makes items sit side-by-side (Left Sidebar | Right Content)
+    <div className="flex h-screen w-screen bg-[#0b0f19] overflow-hidden">
+      
+      {/* Sidebar Container (Fixed Width) */}
+      <div className="flex-shrink-0">
         <AdminNavbar />
       </div>
 
-      {/* Main Content Area */}
-      <main style={{ 
-        flex: 1, 
-        padding: "2rem 3rem", 
-        overflowY: "auto", 
-        height: "100vh",
-        background: "radial-gradient(circle at 90% 10%, rgba(245, 158, 11, 0.05), transparent 40%)"
-      }}>
-        <Outlet />
-      </main>
+      {/* Main Content (Scrollable) */}
+      <div className="flex-1 flex flex-col h-full overflow-y-auto">
+        <main className="p-8 pb-20">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
+
     </div>
   );
 }

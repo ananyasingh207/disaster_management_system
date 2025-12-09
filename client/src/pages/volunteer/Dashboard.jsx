@@ -1,44 +1,127 @@
 import { useEffect, useState } from "react";
 import api from "../../api";
+import { Link } from "react-router-dom";
 
 export default function Dashboard() {
-  const [missions, setMissions] = useState([]);
-  const [alerts, setAlerts] = useState([]);
+  const [data, setData] = useState({ adminAlerts: [], citizenAlerts: [], activeMissions: [] });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/missions").then((res) => setMissions(res.data));
-    api.get("/volunteer/alerts").then((res) => setAlerts(res.data));
+    const load = async () => {
+      try {
+        const res = await api.get("/volunteer/dashboard");
+        setData(res.data);
+      } catch (err) { console.error("Load failed", err); } 
+      finally { setLoading(false); }
+    };
+    load();
   }, []);
 
-  return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Volunteer Dashboard</h1>
+  if (loading) return <div className="p-10 text-white font-mono animate-pulse">SYNCING TACTICAL DATA...</div>;
 
-      <h2 className="text-xl font-semibold mb-2">Active Missions</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {missions.filter(m => m.status !== "COMPLETED").map((m) => (
-          <div key={m._id} className="glass-panel p-4">
-            <h3 className="font-bold text-lg">{m.title}</h3>
-            <p className="text-sm text-gray-400">{m.description}</p>
-            <a
-              href={`/volunteer/missions/${m._id}`}
-              className="text-red-400 underline"
-            >
-              View Mission →
-            </a>
-          </div>
-        ))}
+  return (
+    <div className="max-w-6xl mx-auto pb-12 animate-fade-in-up">
+      
+      {/* HEADER */}
+      <div className="mb-8 border-b border-slate-800 pb-6">
+        <h1 className="text-4xl font-black text-white tracking-tight mb-2">Volunteer Dashboard</h1>
+        <p className="text-slate-400 font-medium">Live situational awareness and command feed.</p>
       </div>
 
-      <h2 className="text-xl font-semibold mt-6 mb-2">Alerts</h2>
-      {alerts.length === 0 && <p>No alerts</p>}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        {/* --- LEFT COL: MISSIONS & BROADCASTS --- */}
+        <div className="space-y-8">
+          
+          {/* Active Missions Card */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl border-l-4 border-l-emerald-500">
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Current Assignment
+            </h3>
+            
+            {data.activeMissions.length === 0 ? (
+              <div className="text-slate-500 italic py-4 border border-dashed border-slate-800 rounded-lg text-center text-sm">
+                No active directives. Standby mode engaged.
+              </div>
+            ) : (
+              data.activeMissions.map(m => (
+                <div key={m._id} className="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="text-lg font-bold text-white">{m.title}</h4>
+                    <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded border border-emerald-500/30 font-bold tracking-wider">ACTIVE</span>
+                  </div>
+                  <p className="text-sm text-slate-300 mb-4">{m.description}</p>
+                  <Link to={`/volunteer/missions/${m._id}`}>
+                    <button className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-lg text-xs transition-colors">
+                      VIEW TACTICAL DETAILS →
+                    </button>
+                  </Link>
+                </div>
+              ))
+            )}
+          </div>
 
-      {alerts.map((a) => (
-        <div key={a._id} className="border border-red-400 p-3 rounded mb-2">
-          <h4 className="font-bold">{a.type.toUpperCase()}</h4>
-          <p>{a.message}</p>
+          {/* Admin Broadcasts */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+            <h3 className="text-lg font-bold text-blue-400 mb-4 flex items-center gap-2 uppercase tracking-wider text-xs">
+              <span>📡</span> Command Broadcasts
+            </h3>
+            
+            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+              {data.adminAlerts.length === 0 && <p className="text-slate-500 text-sm">No recent signals.</p>}
+              
+              {data.adminAlerts.map(a => (
+                <div key={a._id} className="p-4 bg-slate-950/50 rounded-xl border border-slate-800 hover:border-slate-700 transition-colors">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-xs font-bold text-amber-500">[{a.type}]</span>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
+                      a.severity === 'CRITICAL' ? 'border-red-500 text-red-500 bg-red-500/10' : 'border-slate-600 text-slate-400'
+                    }`}>
+                      {a.severity}
+                    </span>
+                  </div>
+                  <p className="text-sm text-slate-200 mb-2">{a.message}</p>
+                  <div className="text-[10px] text-slate-600 font-mono">
+                    Target: {a.region || "Global"} • {new Date(a.createdAt).toLocaleTimeString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      ))}
+
+        {/* --- RIGHT COL: CITIZEN DISTRESS SIGNALS --- */}
+        <div className="bg-slate-900 border border-red-500/20 rounded-2xl p-6 shadow-xl h-fit">
+          <h3 className="text-xl font-bold text-red-500 mb-6 flex items-center gap-2">
+            <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-red-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+            Citizen Distress Signals
+          </h3>
+          
+          <div className="space-y-4">
+            {data.citizenAlerts.length === 0 && (
+              <div className="text-center py-12 text-slate-600 border border-dashed border-slate-800 rounded-xl">
+                No active distress signals in your sector.
+              </div>
+            )}
+            
+            {data.citizenAlerts.map(c => (
+              <div key={c._id} className="relative bg-red-900/10 border border-red-500/30 p-5 rounded-xl hover:bg-red-900/20 transition-colors group">
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-bold text-white group-hover:text-red-400 transition-colors">{c.type} Incident</h4>
+                  <span className="text-[10px] font-mono text-red-300/70">{new Date(c.createdAt).toLocaleTimeString()}</span>
+                </div>
+                <p className="text-sm text-slate-300 mb-3 line-clamp-2">{c.description}</p>
+                <div className="flex items-center gap-2 text-xs text-slate-500 font-mono bg-black/20 p-2 rounded w-fit">
+                  <span>📍</span> {c.location || "Unknown Loc"}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }

@@ -1,15 +1,21 @@
 import { Outlet } from "react-router-dom";
-import "../github-css/bootstrap.min.css";
-import "../github-css/citizen-navbar.css";
-import CitizenNavbar from "../components/CitizenNavbar";
+// 👇 You were missing this import line!
+import CitizenNavbar from "../components/CitizenNavbar"; 
+import Footer from "../components/Footer";
 
 export default function CitizenLayout() {
   return (
-    <div className="citizen-bg">
+    <div className="min-h-screen bg-[#0f172a] text-white flex flex-col">
+      {/* Navbar at the top */}
       <CitizenNavbar />
-      <div className="container mt-4">
+      
+      {/* Main Content Area */}
+      <main className="container mx-auto p-6 flex-1">
         <Outlet />
-      </div>
+      </main>
+
+      {/* Footer at the bottom */}
+      <Footer />
     </div>
   );
 }

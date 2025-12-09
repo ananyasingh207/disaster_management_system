@@ -1,54 +1,75 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function VolunteerNavbar() {
-  // Helper to apply CSS classes based on active state
-  const getLinkClass = ({ isActive }) => 
-    isActive ? "nav-link active" : "nav-link";
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
+  const getLinkClass = ({ isActive }) => {
+    const base =
+      "flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200";
+    const active =
+      "bg-blue-500/10 text-blue-400 border-l-4 border-blue-500 shadow-lg shadow-blue-900/20";
+    const inactive =
+      "text-slate-400 hover:bg-slate-800/50 hover:text-white border-l-4 border-transparent";
+
+    return isActive ? `${base} ${active}` : `${base} ${inactive}`;
+  };
 
   return (
-    <aside style={{ 
-      height: "100%",
-      width: "100%",
-      borderRight: "1px solid var(--glass-border)", 
-      padding: "2rem 1.5rem",
-      display: "flex",
-      flexDirection: "column",
-      background: "rgba(15, 23, 42, 0.4)", // Dark Blue/Slate background
-      backdropFilter: "blur(10px)"
-    }}>
-      {/* Header / Logo */}
-      <div style={{ marginBottom: "3rem", paddingLeft: "0.5rem" }}>
-        <h2 style={{ fontSize: "1.5rem", color: "var(--primary)", margin: 0 }}>
-          VOLUNTEER<span style={{ color: "#fff" }}>.OS</span>
+    <aside className="h-screen w-72 bg-[#0f172a] border-r border-slate-700 flex flex-col sticky top-0 z-50">
+
+      {/* HEADER */}
+      <div className="p-8 border-b border-slate-700/50">
+        <h2 className="text-2xl font-black text-white tracking-tight">
+          VOLUNTEER<span className="text-blue-500">.OS</span>
         </h2>
-        <p style={{ fontSize: "0.75rem", margin: 0, opacity: 0.6 }}>Disaster Response Unit</p>
+        <p className="text-xs text-slate-400 mt-1 font-medium">
+          Disaster Response Unit
+        </p>
       </div>
 
-      {/* Navigation Links */}
-      <nav style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-        {/* 'end' prop ensures Dashboard isn't active for every sub-route */}
-        <NavLink to="/" end className={getLinkClass}>
-          Dashboard
+      {/* NAVIGATION (scrollable) */}
+      <nav className="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-2">
+        <NavLink to="/volunteer" end className={getLinkClass}>
+          <span>🏠</span> Dashboard
         </NavLink>
-        <NavLink to="/missions" className={getLinkClass}>
-          Missions
+        <NavLink to="/volunteer/training" className={getLinkClass}>
+          <span>🎓</span> Training Center
         </NavLink>
-        <NavLink to="/report" className={getLinkClass}>
-          Report Incident
+        <NavLink to="/volunteer/missions" className={getLinkClass}>
+          <span>🚀</span> Missions
         </NavLink>
-        <NavLink to="/profile" className={getLinkClass}>
-          Profile
+        <NavLink to="/volunteer/report" className={getLinkClass}>
+          <span>📝</span> Report Incident
+        </NavLink>
+        <NavLink to="/volunteer/profile" className={getLinkClass}>
+          <span>👤</span> My Profile
         </NavLink>
       </nav>
 
-      {/* Footer / Status Indicator */}
-      <div style={{ marginTop: "auto", padding: "1rem", borderRadius: "12px", background: "rgba(255,255,255,0.03)", border: "1px solid var(--glass-border)" }}>
-        <p style={{ fontSize: "0.75rem", margin: 0, textTransform: "uppercase", letterSpacing: "1px", color: "var(--text-muted)" }}>Connection</p>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.85rem", color: "var(--success)", fontWeight: "600", marginTop: "4px" }}>
-          <span style={{ width: "8px", height: "8px", background: "var(--success)", borderRadius: "50%", boxShadow: "0 0 10px var(--success)" }}></span>
-          SECURE_LINK
+      {/* STATUS + LOGOUT (NON-scrollable bottom) */}
+      <div className="p-4 m-4 bg-slate-800/50 rounded-xl border border-slate-700 backdrop-blur-sm">
+        <p className="text-[10px] uppercase text-slate-500 font-bold tracking-wider mb-2">
+          Status
+        </p>
+        <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 mb-4">
+          <div className="w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_#10b981]"></div>
+          ONLINE
         </div>
+
+        {/* LOGOUT BUTTON */}
+        <button
+          onClick={handleLogout}
+          className="w-full px-4 py-2 bg-red-600 text-white rounded-lg font-bold text-sm hover:bg-red-500 transition-all"
+        >
+          🚪 Logout
+        </button>
       </div>
+
     </aside>
   );
 }

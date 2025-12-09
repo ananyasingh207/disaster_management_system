@@ -1,150 +1,61 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../../api";
-import "../../github-css/citizen-login.css";
 
 export default function CitizenRegister() {
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    password: "",
-  });
-
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpVerified, setOtpVerified] = useState(false);
+  const navigate = useNavigate();
   const [msg, setMsg] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [form, setForm] = useState({ name: "", phone: "", email: "", password: "", otp: "" });
 
-  const onChange = (e) =>
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const sendOtp = async (e) => {
-    e.preventDefault();
-    setMsg("");
-
-    if (!form.email) {
-      setMsg("Enter email first.");
-      return;
-    }
-
+  const handleSendOtp = async () => {
+    if (!form.email) return setMsg("Please enter email address first.");
+    setMsg("Sending Code...");
     try {
       await api.post("/citizen/otp/send", { email: form.email });
       setOtpSent(true);
-      setMsg("OTP sent to your email.");
-    } catch {
-      setMsg("Failed to send OTP.");
-    }
+      setMsg("✓ OTP Sent");
+    } catch { setMsg("⚠ Failed to send OTP"); }
   };
 
-  const verifyOtp = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setMsg("");
-
-    if (!otp) {
-      setMsg("Enter the OTP.");
-      return;
-    }
-
-    try {
-      await api.post("/citizen/otp/verify", {
-        email: form.email,
-        code: otp,
-      });
-      setOtpVerified(true);
-      setMsg("OTP verified. You can register now.");
-    } catch (err) {
-      setMsg("Invalid or expired OTP.");
-    }
-  };
-
-  const register = async (e) => {
-    e.preventDefault();
-    setMsg("");
-
-    if (!otpVerified) {
-      setMsg("Please verify OTP before registering.");
-      return;
-    }
-
     try {
       await api.post("/citizen/auth/register", form);
-      window.location.href = "/citizen/login";
-    } catch {
-      setMsg("Error creating account.");
-    }
+      setMsg("✓ Success! Redirecting...");
+      setTimeout(() => navigate("/citizen/login"), 1500);
+    } catch (err) { setMsg("⚠ Registration Failed"); }
   };
 
   return (
-    <div className="citizen-login-box">
-      <h3 className="text-center mb-3">Citizen Registration</h3>
+    <div className="flex items-center justify-center min-h-screen bg-slate-900 relative overflow-hidden">
+      <div className="w-full max-w-md p-10 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl mx-4 z-10">
+        <h1 className="text-3xl font-black text-white text-center mb-2">Join the Network</h1>
+        <p className="text-slate-400 text-sm text-center mb-8">Citizen Reporting Registration</p>
 
-      {msg && <div className="alert alert-info">{msg}</div>}
+        {msg && <div className="p-3 mb-6 rounded text-center text-sm bg-slate-800 border border-slate-700 text-blue-400 font-bold">{msg}</div>}
 
-      {/* Main form */}
-      <form>
-        <input
-          className="form-control mb-2"
-          name="name"
-          placeholder="Name"
-          value={form.name}
-          onChange={onChange}
-        />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <input name="name" onChange={handleChange} required placeholder="Full Name" className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
+          <input name="phone" onChange={handleChange} required placeholder="Phone Number" className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
+          
+          <div className="flex gap-2">
+            <input name="email" type="email" onChange={handleChange} required placeholder="Email Address" className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
+            {!otpSent && <button type="button" onClick={handleSendOtp} className="px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-bold transition-colors whitespace-nowrap">GET OTP</button>}
+          </div>
 
-        <input
-          className="form-control mb-2"
-          name="phone"
-          placeholder="Phone"
-          value={form.phone}
-          onChange={onChange}
-        />
+          {otpSent && <input name="otp" onChange={handleChange} required placeholder="Enter 6-digit OTP" className="w-full bg-slate-950 border border-green-500/50 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-green-500 animate-fade-in" />}
 
-        <input
-          className="form-control mb-2"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={onChange}
-        />
+          <input name="password" type="password" onChange={handleChange} required placeholder="Password" className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
 
-        <input
-          className="form-control mb-2"
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={onChange}
-        />
-
-        {/* OTP section */}
-        {!otpSent && (
-          <button className="btn btn-danger w-100 mb-2" onClick={sendOtp}>
-            Send OTP
+          <button type="submit" disabled={!otpSent} className={`w-full py-3.5 rounded-lg font-bold text-sm shadow-lg transition-all ${otpSent ? "bg-blue-600 hover:bg-blue-500 text-white" : "bg-slate-800 text-slate-500 cursor-not-allowed"}`}>
+            {otpSent ? "CREATE ACCOUNT" : "VERIFY EMAIL FIRST"}
           </button>
-        )}
-
-        {otpSent && !otpVerified && (
-          <>
-            <input
-              className="form-control mb-2"
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-            />
-
-            <button className="btn btn-warning w-100 mb-2" onClick={verifyOtp}>
-              Verify OTP
-            </button>
-          </>
-        )}
-
-        <button
-          className="btn btn-success w-100"
-          onClick={register}
-          disabled={!otpVerified}
-        >
-          Register
-        </button>
-      </form>
+        </form>
+        <div className="mt-6 text-center text-sm text-slate-500">Already registered? <Link to="/citizen/login" className="text-blue-400 hover:text-white ml-1 font-bold transition-colors">Login</Link></div>
+      </div>
     </div>
   );
 }

@@ -1,24 +1,26 @@
 import { Outlet } from "react-router-dom";
 import VolunteerNavbar from "../components/VolunteerNavbar";
+import Footer from "../components/Footer";
 
 export default function VolunteerLayout() {
   return (
-    <div className="theme-volunteer" style={{ display: "flex", minHeight: "100vh", overflow: "hidden" }}>
-      {/* Sidebar Container */}
-      <div style={{ width: "280px", flexShrink: 0 }}>
+    <div className="flex h-screen bg-[#0f172a] overflow-hidden">
+      
+      {/* 1. FIXED SIDEBAR */}
+      <div className="flex-shrink-0">
         <VolunteerNavbar />
       </div>
 
-      {/* Main Content Area */}
-      <main style={{ 
-        flex: 1, 
-        padding: "2rem 3rem", 
-        overflowY: "auto", 
-        height: "100vh",
-        position: "relative"
-      }}>
-        <Outlet />
-      </main>
+      {/* 2. SCROLLABLE MAIN AREA */}
+      <div className="flex-1 flex flex-col h-full overflow-y-auto relative">
+        
+        <main className="flex-1 p-8 pb-20">
+          <Outlet />
+        </main>
+
+        <Footer />
+      </div>
+
     </div>
   );
 }
