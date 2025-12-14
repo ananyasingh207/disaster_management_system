@@ -1,3 +1,23 @@
+// const mongoose = require("mongoose");
+
+// const citizenSchema = new mongoose.Schema(
+//   {
+//     name: { type: String, required: true },
+//     phone: { type: String, required: true, unique: true },
+//     email: { type: String },
+
+//     password: { type: String, required: true }, // hashed
+
+//     role: {
+//       type: String,
+//       default: "citizen",
+//     }
+//   },
+//   { timestamps: true }
+// );
+
+// module.exports = mongoose.model("Citizen", citizenSchema, "citizens");
+
 const mongoose = require("mongoose");
 
 const citizenSchema = new mongoose.Schema(
@@ -6,14 +26,17 @@ const citizenSchema = new mongoose.Schema(
     phone: { type: String, required: true, unique: true },
     email: { type: String },
 
-    password: { type: String, required: true }, // hashed
+    password: { type: String, required: true },
 
-    role: {
+    roleType: {
       type: String,
-      default: "citizen",
-    }
+      enum: ["CITIZEN"],
+      default: "CITIZEN",
+    },
+
+    isApproved: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Citizen", citizenSchema, "citizens");
+module.exports = mongoose.model("Citizen", citizenSchema);
