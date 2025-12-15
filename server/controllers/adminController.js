@@ -229,7 +229,7 @@ exports.deployMission = async (req, res) => {
 // // --- SEND PUBLIC REPLY (With Debugging) ---
 // exports.sendCitizenReply = async (req, res) => {
 //   try {
-//     console.log("📨 Received Reply Request:", req.body);
+//     console.log("Received Reply Request:", req.body);
 //     const { id, message } = req.body;
 //     if (!id || !message) return res.status(400).json({ message: "ID/Msg missing" });
 
@@ -242,14 +242,14 @@ exports.deployMission = async (req, res) => {
 //     }
 
 //     if (!updated) {
-//       console.log("❌ Document Not Found");
+//       console.log("Document Not Found");
 //       return res.status(404).json({ message: "Incident not found" });
 //     }
 
-//     console.log("✅ Reply Saved");
+//     console.log("Reply Saved");
 //     res.json({ message: "Reply Sent" });
 //   } catch (err) {
-//     console.error("🔥 SERVER ERROR:", err);
+//     console.error("SERVER ERROR:", err);
 //     res.status(500).json({ message: "Failed" });
 //   }
 // };
@@ -480,7 +480,7 @@ exports.createCitizenAlert = async (req, res) => {
     const alert = await CitizenAlert.create(alertData);
     res.json(alert);
   } catch (err) {
-    console.error("❌ Broadcast Creation Failed:", err);
+    console.error("Broadcast Creation Failed:", err);
     res.status(500).json({ message: "Server Error" });
   }
 };
@@ -553,7 +553,7 @@ exports.addAdminRecord = async (req, res) => {
 // Deploy Rescue Team (Assign Volunteer)
 exports.deployMission = async (req, res) => {
   try {
-    console.log("🚀 Assigning Incident:", req.body);
+    console.log("Assigning Incident:", req.body);
     // Support payload format
     const id = req.body.sourceId || req.body.id || req.body._id;
     const { volunteerId } = req.body;
@@ -578,7 +578,7 @@ exports.deployMission = async (req, res) => {
     incident.assignedVolunteer = volunteerId;
 
     await incident.save();
-    console.log(`✅ Incident Assigned to ${volunteerId} (IN_PROGRESS):`, id);
+    console.log(`Incident Assigned to ${volunteerId} (IN_PROGRESS):`, id);
 
     res.json({ message: "Volunteer Assigned Successfully", incident });
   } catch (err) {

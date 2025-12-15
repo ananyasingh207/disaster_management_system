@@ -6,8 +6,8 @@ export default function CitizenIncidents() {
 
   useEffect(() => {
     api.get("/citizen/incidents/my")
-       .then((res) => setIncidents(res.data))
-       .catch((err) => console.error(err));
+      .then((res) => setIncidents(res.data))
+      .catch((err) => console.error(err));
   }, []);
 
   return (
@@ -23,16 +23,15 @@ export default function CitizenIncidents() {
             No reports filed yet.
           </div>
         )}
-        
+
         {incidents.map((inc) => (
           <div key={inc._id} className="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:bg-slate-800/50 transition-colors shadow-lg group">
-            
+
             {/* Header */}
             <div className="flex justify-between items-start mb-4">
-              <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider ${
-                inc.severity === 'CRITICAL' ? 'bg-red-500 text-white' : 
-                inc.severity === 'HIGH' ? 'bg-orange-500/20 text-orange-500' : 'bg-slate-700 text-slate-300'
-              }`}>
+              <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider ${inc.severity === 'CRITICAL' ? 'bg-red-500 text-white' :
+                  inc.severity === 'HIGH' ? 'bg-orange-500/20 text-orange-500' : 'bg-slate-700 text-slate-300'
+                }`}>
                 {inc.severity} Priority
               </span>
               <span className="text-[10px] text-slate-500 font-mono">
@@ -55,13 +54,12 @@ export default function CitizenIncidents() {
             {/* Footer */}
             <div className="pt-4 border-t border-slate-800 flex justify-between items-center">
               <span className="text-xs text-slate-500 font-mono flex items-center gap-1">
-                📍 {inc.address}
+                Location: {inc.address}
               </span>
-              <span className={`text-xs font-bold px-2 py-1 rounded uppercase ${
-                inc.status === 'RESOLVED' ? 'bg-emerald-500/10 text-emerald-500' : 
-                inc.status === 'IN_PROGRESS' ? 'bg-blue-500/10 text-blue-500' : 
-                'bg-yellow-500/10 text-yellow-500'
-              }`}>
+              <span className={`text-xs font-bold px-2 py-1 rounded uppercase ${inc.status === 'RESOLVED' ? 'bg-emerald-500/10 text-emerald-500' :
+                  inc.status === 'IN_PROGRESS' ? 'bg-blue-500/10 text-blue-500' :
+                    'bg-yellow-500/10 text-yellow-500'
+                }`}>
                 {inc.status}
               </span>
             </div>

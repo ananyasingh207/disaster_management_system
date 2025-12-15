@@ -6,6 +6,7 @@ export default function Dashboard() {
   const [data, setData] = useState({
     activeIncidents: [],
     assignedIncidents: [],
+    completedIncidents: [],
   });
   const [loading, setLoading] = useState(true);
 
@@ -16,6 +17,7 @@ export default function Dashboard() {
         setData({
           activeIncidents: res.data.activeIncidents || [],
           assignedIncidents: res.data.assignedIncidents || [],
+          completedIncidents: res.data.completedIncidents || []
         });
       } catch (err) {
         console.error("Dashboard load failed:", err);
@@ -57,14 +59,11 @@ export default function Dashboard() {
       </div>
 
       <div className="flex flex-col gap-12">
-        {/* SECTION 1: LIVE ACTIVE INCIDENTS (REMOVED - Admin Assignment Only) */}
-        {/* Volunteers cannot see PENDING incidents anymore. */}
-
-        {/* SECTION 2: ONGOING OPERATIONS (Assigned) */}
+        {/* SECTION 1: ONGOING OPERATIONS (Assigned) */}
         <section className="bg-slate-900/30 border border-slate-800/60 rounded-2xl p-8">
           <div className="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
             <h3 className="text-lg font-bold text-slate-300 flex items-center gap-2 uppercase tracking-wider text-xs">
-              <span>🛡️</span> Ongoing Operations
+              Ongoing Operations
             </h3>
             <span className="text-xs text-slate-500 font-mono">
               {data.assignedIncidents.length} ASSIGNED
@@ -101,7 +100,7 @@ export default function Dashboard() {
 
                   <div className="flex justify-between items-center mt-auto border-t border-slate-700/30 pt-3">
                     <span className="text-[10px] text-slate-600 font-mono truncate max-w-[120px] flex items-center gap-1">
-                      📍 {c.location?.address || "Location unavailable"}
+                      Location: {c.location?.address || "Location unavailable"}
                     </span>
                     <Link to={`/volunteer/incidents/${c._id}`}>
                       <button className="text-[10px] font-bold text-slate-400 hover:text-white uppercase tracking-wider transition-colors">
@@ -111,6 +110,65 @@ export default function Dashboard() {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+        </section>
+
+        {/* SECTION 2: COMPLETED ASSIGNMENTS (History Tables) */}
+        <section className="bg-slate-900/30 border border-slate-800/60 rounded-2xl p-8">
+          <div className="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+            <h3 className="text-lg font-bold text-slate-300 flex items-center gap-2 uppercase tracking-wider text-xs">
+              Mission History
+            </h3>
+            <span className="text-xs text-slate-500 font-mono">
+              {data.completedIncidents?.length || 0} COMPLETED
+            </span>
+          </div>
+
+          {!data.completedIncidents || data.completedIncidents.length === 0 ? (
+            <div className="text-center py-8 text-slate-600 text-sm italic">
+              No completed missions on record.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="text-[10px] uppercase text-slate-500 border-b border-slate-800">
+                    <th className="py-3 px-4">ID</th>
+                    <th className="py-3 px-4">Title</th>
+                    <th className="py-3 px-4">Severity</th>
+                    <th className="py-3 px-4">Location</th>
+                    <th className="py-3 px-4">Completed On</th>
+                    <th className="py-3 px-4 text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm text-slate-400">
+                  {data.completedIncidents.map((inc) => (
+                    <tr key={inc._id} className="border-b border-slate-800/50 hover:bg-slate-800/20 transition-colors">
+                      <td className="py-3 px-4 font-mono text-xs">{inc._id.slice(-6).toUpperCase()}</td>
+                      <td className="py-3 px-4 font-medium text-slate-300">{inc.title}</td>
+                      <td className="py-3 px-4">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${inc.severity === "CRITICAL" || inc.severity === "HIGH" ? "text-red-400 border-red-500/20 bg-red-500/5" :
+                          "text-sky-400 border-sky-500/20 bg-sky-500/5"
+                          }`}>
+                          {inc.severity || "NORMAL"}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-xs font-mono truncate max-w-[150px]">
+                        {inc.location?.address || "N/A"}
+                      </td>
+                      <td className="py-3 px-4 text-xs font-mono">
+                        {new Date(inc.updatedAt).toLocaleDateString()}
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">
+                          COMPLETED
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </section>

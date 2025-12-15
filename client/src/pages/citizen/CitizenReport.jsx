@@ -56,10 +56,10 @@ export default function CitizenReport() {
       {/* STATUS MESSAGE */}
       {msg.text && (
         <div className={`p-4 mb-8 rounded-xl border flex items-center gap-3 shadow-lg ${msg.type === "error"
-            ? "bg-red-500/10 border-red-500/50 text-red-400"
-            : "bg-emerald-500/10 border-emerald-500/50 text-emerald-400"
+          ? "bg-red-500/10 border-red-500/50 text-red-400"
+          : "bg-emerald-500/10 border-emerald-500/50 text-emerald-400"
           }`}>
-          <span className="text-xl">{msg.type === "error" ? "⚠️" : "✅"}</span>
+          <span className="text-xl font-bold">{msg.type === "error" ? "Error:" : "Success:"}</span>
           <span className="font-bold text-sm uppercase tracking-wide">{msg.text}</span>
         </div>
       )}
@@ -110,7 +110,7 @@ export default function CitizenReport() {
                     value={form.severity}
                     onChange={change}
                     className={`w-full bg-slate-950 border rounded-lg px-4 py-3 text-sm font-bold outline-none transition-all cursor-pointer ${form.severity === 'CRITICAL' ? 'border-red-500 text-red-500' :
-                        form.severity === 'HIGH' ? 'border-orange-500 text-orange-500' : 'border-slate-700 text-white'
+                      form.severity === 'HIGH' ? 'border-orange-500 text-orange-500' : 'border-slate-700 text-white'
                       }`}
                   >
                     <option value="LOW">Low (Minor)</option>

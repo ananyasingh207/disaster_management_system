@@ -83,7 +83,7 @@ export default function IncidentDetails() {
         </h1>
 
         <div className="flex items-center gap-2 text-sm text-slate-300 font-mono bg-slate-950/50 p-4 rounded-lg border border-slate-800 w-full md:w-fit relative z-10">
-          <span>📍</span>
+          <span>Location: </span>
           {incident.location?.address
             ? incident.location.address
             : (typeof incident.location === 'string' ? incident.location : 'Location unavailable')}
@@ -184,7 +184,7 @@ export default function IncidentDetails() {
           {/* 3. COMPLETED STATE */}
           {["COMPLETED", "RESOLVED"].includes(incident.status) && (
             <div className="flex items-center gap-2 px-6 py-3 rounded-lg bg-emerald-900/20 border border-emerald-500/30 text-emerald-400 font-bold text-xs uppercase tracking-wider">
-              <span>✔</span> Incident successfully resolved
+              <span>Success: </span> Incident successfully resolved
             </div>
           )}
         </div>

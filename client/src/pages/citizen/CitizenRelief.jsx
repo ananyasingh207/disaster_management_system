@@ -3,10 +3,10 @@ import api from "../../api";
 import LocationMap from "../../components/LocationMap"; // 👈 Import Map
 
 export default function CitizenRelief() {
-  const [activeTab, setActiveTab] = useState("shelters"); 
+  const [activeTab, setActiveTab] = useState("shelters");
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   const [appeal, setAppeal] = useState({
     name: "",
     familySize: 1,
@@ -19,11 +19,11 @@ export default function CitizenRelief() {
 
   useEffect(() => {
     api.get("/citizen/alerts")
-       .then(res => {
-         setAlerts(res.data);
-         setLoading(false);
-       })
-       .catch(err => setLoading(false));
+      .then(res => {
+        setAlerts(res.data);
+        setLoading(false);
+      })
+      .catch(err => setLoading(false));
   }, []);
 
   // 🔹 Handle Map Click
@@ -36,7 +36,7 @@ export default function CitizenRelief() {
     try {
       await api.post("/citizen/incidents", {
         title: `DIRECT APPEAL: ${appeal.needs} (${appeal.familySize} People)`,
-        type: "HUMANITARIAN", 
+        type: "HUMANITARIAN",
         severity: appeal.urgency === "HIGH" ? "CRITICAL" : "HIGH",
         description: `Requesting immediate ${appeal.needs}. Family Size: ${appeal.familySize}. Contact Name: ${appeal.name}`,
         address: appeal.location // Uses map coordinates or manual input
@@ -56,7 +56,7 @@ export default function CitizenRelief() {
 
   return (
     <div className="max-w-6xl mx-auto pb-12 animate-fade-in-up">
-      
+
       {/* HEADER */}
       <div className="mb-10 border-b border-slate-800 pb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
@@ -76,22 +76,22 @@ export default function CitizenRelief() {
       {/* TABS */}
       <div className="flex gap-4 mb-8 border-b border-slate-800">
         <button onClick={() => setActiveTab('shelters')} className={`pb-3 px-2 text-sm font-bold transition-colors border-b-2 ${activeTab === 'shelters' ? 'border-emerald-500 text-emerald-500' : 'border-transparent text-slate-500 hover:text-white'}`}>
-          ⛺ FIND SHELTER
+          FIND SHELTER
         </button>
         <button onClick={() => setActiveTab('appeals')} className={`pb-3 px-2 text-sm font-bold transition-colors border-b-2 ${activeTab === 'appeals' ? 'border-blue-500 text-blue-500' : 'border-transparent text-slate-500 hover:text-white'}`}>
-          ✋ DIRECT APPEAL
+          DIRECT APPEAL
         </button>
       </div>
 
       {/* --- CONTENT AREA --- */}
-      
+
       {/* 1. SHELTER LOCATOR */}
       {activeTab === 'shelters' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {shelters.map(s => (
             <div key={s.id} className="bg-slate-900 border border-slate-800 p-6 rounded-xl shadow-lg hover:border-slate-700 transition-colors">
               <div className="flex justify-between mb-4">
-                <span className="text-3xl">⛺</span>
+                <span className="text-3xl"></span>
                 <span className={`text-xs font-bold px-2 py-1 rounded h-fit ${s.status === 'OPEN' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
                   {s.status}
                 </span>
@@ -120,26 +120,26 @@ export default function CitizenRelief() {
           {msg && <div className="p-4 mb-6 bg-blue-500/10 border border-blue-500/50 text-blue-400 rounded-lg text-center font-bold">{msg}</div>}
 
           <form onSubmit={submitAppeal} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
+
             {/* Left Column: Details */}
             <div className="space-y-5">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Contact Name</label>
-                  <input required className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm focus:border-blue-500 outline-none transition-all" 
-                    value={appeal.name} onChange={e => setAppeal({...appeal, name: e.target.value})} />
+                  <input required className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm focus:border-blue-500 outline-none transition-all"
+                    value={appeal.name} onChange={e => setAppeal({ ...appeal, name: e.target.value })} />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Family Size</label>
-                  <input type="number" required className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm focus:border-blue-500 outline-none transition-all" 
-                    value={appeal.familySize} onChange={e => setAppeal({...appeal, familySize: e.target.value})} />
+                  <input type="number" required className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm focus:border-blue-500 outline-none transition-all"
+                    value={appeal.familySize} onChange={e => setAppeal({ ...appeal, familySize: e.target.value })} />
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Primary Need</label>
                 <select className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm focus:border-blue-500 outline-none transition-all cursor-pointer"
-                  value={appeal.needs} onChange={e => setAppeal({...appeal, needs: e.target.value})}>
+                  value={appeal.needs} onChange={e => setAppeal({ ...appeal, needs: e.target.value })}>
                   <option value="SHELTER">Emergency Shelter / Tent</option>
                   <option value="FOOD">Food & Water Rations</option>
                   <option value="MEDICAL">Medical Aid / Medicine</option>
@@ -149,8 +149,8 @@ export default function CitizenRelief() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Current Location</label>
-                <input required placeholder="Click map or type address..." className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm focus:border-blue-500 outline-none transition-all font-mono" 
-                  value={appeal.location} onChange={e => setAppeal({...appeal, location: e.target.value})} />
+                <input required placeholder="Click map or type address..." className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm focus:border-blue-500 outline-none transition-all font-mono"
+                  value={appeal.location} onChange={e => setAppeal({ ...appeal, location: e.target.value })} />
               </div>
 
               <div className="pt-4">
@@ -186,7 +186,7 @@ export default function CitizenRelief() {
               </div>
               <p className="text-slate-300 text-sm mb-3 leading-relaxed">{a.message}</p>
               <div className="flex items-center gap-2 text-xs text-slate-500 uppercase tracking-wider font-mono">
-                <span>📍 Target: {a.region || "General"}</span>
+                <span>Target: {a.region || "General"}</span>
                 <span>•</span>
                 <span>{new Date(a.createdAt).toLocaleDateString()}</span>
               </div>

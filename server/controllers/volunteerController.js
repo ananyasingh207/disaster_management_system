@@ -40,11 +40,11 @@
 //         otp: otpCode // Passing this for the HTML template
 //       });
 
-//       console.log(`✅ Email sent to ${email}`);
+//       console.log(`Email sent to ${email}`);
 //       res.json({ message: "OTP sent to your email!" });
 
 //     } catch (emailError) {
-//       console.error("❌ Email send failed:", emailError);
+//       console.error("Email send failed:", emailError);
 
 //       // If email fails, remove the OTP from DB so user can try again immediately
 //       await Otp.deleteOne({ email });
@@ -440,9 +440,18 @@ exports.getDashboardData = async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
+    // 3. Completed Assignments (History)
+    const completedIncidents = await CitizenIncident.find({
+      assignedVolunteer: req.user._id,
+      status: "COMPLETED"
+    })
+      .sort({ updatedAt: -1 })
+      .lean();
+
     res.json({
       activeIncidents, // Empty
-      assignedIncidents
+      assignedIncidents,
+      completedIncidents
     });
   } catch (err) {
     console.error("Dashboard Data Error:", err);

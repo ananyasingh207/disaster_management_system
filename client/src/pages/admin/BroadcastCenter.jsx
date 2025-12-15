@@ -584,7 +584,7 @@ export default function BroadcastCenter() {
 
                           {alert.region && (
                             <span className="flex items-center gap-1">
-                              <span className="font-bold text-slate-400">📍 Location:</span>
+                              <span className="font-bold text-slate-400">Location:</span>
                               <span className="font-mono">{alert.region}</span>
                             </span>
                           )}

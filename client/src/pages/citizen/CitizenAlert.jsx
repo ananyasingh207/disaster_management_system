@@ -37,7 +37,7 @@ export default function CitizenAlerts() {
         {/* EMPTY STATE */}
         {safeAlerts.length === 0 && (
           <div className="text-center py-16 border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/50">
-            <div className="text-4xl mb-4 opacity-50">🛡️</div>
+            <div className="text-4xl mb-4 opacity-50"></div>
             <h3 className="text-lg font-bold text-white mb-2">No Active Threats</h3>
             <p className="text-slate-500 text-sm">There are currently no active public safety alerts.</p>
           </div>
@@ -58,7 +58,7 @@ export default function CitizenAlerts() {
           const borderColor = isCritical ? 'border-red-500' : 'border-blue-500';
           const bgColor = isCritical ? 'bg-red-500/5' : 'bg-blue-500/5';
           const textColor = isCritical ? 'text-red-500' : 'text-blue-400';
-          const icon = type === 'WEATHER' ? '⛈️' : type === 'EVACUATION' ? '📢' : '⚠️';
+          const icon = "";
 
           return (
             <div key={a._id || Math.random()} className={`relative bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl overflow-hidden group hover:border-slate-700 transition-colors`}>
@@ -75,7 +75,7 @@ export default function CitizenAlerts() {
                       {displayType}
                     </span>
                     <span className="text-[10px] font-mono text-slate-500 flex items-center gap-1">
-                      <span>🕒</span> {a.createdAt ? new Date(a.createdAt).toLocaleString() : "Time N/A"}
+                      <span>Time: </span> {a.createdAt ? new Date(a.createdAt).toLocaleString() : "Time N/A"}
                     </span>
                   </div>
 
@@ -100,7 +100,7 @@ export default function CitizenAlerts() {
                   <div>
                     <label className="text-[10px] font-bold text-slate-500 uppercase block">Region</label>
                     <span className="text-white font-mono text-xs block truncate max-w-[200px]">
-                      📍 {a.region || "All Sectors"}
+                      Location: {a.region || "All Sectors"}
                     </span>
                   </div>
                 </div>

@@ -46,8 +46,8 @@ export default function AdminSOS() {
         newStatus === "COMPLETED"
           ? "ACKNOWLEDGED"
           : newStatus === "FALSE_ALARM"
-          ? "CONVERTED"
-          : "PENDING";
+            ? "CONVERTED"
+            : "PENDING";
 
       const res = await api.put(
         `/sos/${selectedSOS._id}/status`,
@@ -102,22 +102,20 @@ export default function AdminSOS() {
       <div className="flex gap-4 mb-6">
         <button
           onClick={() => setActiveTab("PENDING")}
-          className={`px-6 py-3 rounded-xl font-bold transition ${
-            activeTab === "PENDING"
-              ? "bg-red-600 text-white"
-              : "bg-slate-800 text-slate-400 hover:bg-slate-700"
-          }`}
+          className={`px-6 py-3 rounded-xl font-bold transition ${activeTab === "PENDING"
+            ? "bg-red-600 text-white"
+            : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+            }`}
         >
-          Pending SOS ({pendingSOS.length})
+          <span>🔴</span> Pending SOS ({pendingSOS.length})
         </button>
 
         <button
           onClick={() => setActiveTab("RESOLVED")}
-          className={`px-6 py-3 rounded-xl font-bold transition ${
-            activeTab === "RESOLVED"
-              ? "bg-emerald-600 text-white"
-              : "bg-slate-800 text-slate-400 hover:bg-slate-700"
-          }`}
+          className={`px-6 py-3 rounded-xl font-bold transition ${activeTab === "RESOLVED"
+            ? "bg-emerald-600 text-white"
+            : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+            }`}
         >
           Completed / False ({resolvedSOS.length})
         </button>
@@ -157,10 +155,10 @@ export default function AdminSOS() {
                       <p className="text-xl font-mono text-white">
                         {hasCoords
                           ? `${formatNumber(
-                              sos.latitude,
-                              6
-                            )}, ${formatNumber(sos.longitude, 6)}`
-                          : "📍 Location unavailable"}
+                            sos.latitude,
+                            6
+                          )}, ${formatNumber(sos.longitude, 6)}`
+                          : "Location unavailable"}
                       </p>
 
                       <p className="text-sm text-slate-400 mt-2">
@@ -173,13 +171,12 @@ export default function AdminSOS() {
                     </div>
 
                     <span
-                      className={`px-4 py-2 rounded-full text-sm font-bold text-white ${
-                        sos.status === "PENDING"
-                          ? "bg-red-600 animate-pulse"
-                          : sos.status === "COMPLETED"
+                      className={`px-4 py-2 rounded-full text-sm font-bold text-white ${sos.status === "PENDING"
+                        ? "bg-red-600 animate-pulse"
+                        : sos.status === "COMPLETED"
                           ? "bg-emerald-600"
                           : "bg-slate-600"
-                      }`}
+                        }`}
                     >
                       {sos.status}
                     </span>
@@ -221,9 +218,9 @@ export default function AdminSOS() {
             <div className="bg-black/40 rounded-xl p-5 mb-6 font-mono text-lg text-center">
               {selectedSOS.latitude && selectedSOS.longitude
                 ? `${formatNumber(
-                    selectedSOS.latitude,
-                    6
-                  )}, ${formatNumber(selectedSOS.longitude, 6)}`
+                  selectedSOS.latitude,
+                  6
+                )}, ${formatNumber(selectedSOS.longitude, 6)}`
                 : "Location unavailable"}
             </div>
 

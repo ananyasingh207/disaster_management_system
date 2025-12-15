@@ -214,7 +214,7 @@
 //                   Location Coordinates
 //                 </label>
 //                 <div className="text-emerald-400 font-mono text-sm bg-emerald-900/10 p-2 rounded border border-emerald-900/30 inline-block">
-//                   📍 {incident.address || incident.region || incident.location}
+//                   Location: {incident.address || incident.region || incident.location}
 //                 </div>
 //               </div>
 //             </div>
@@ -224,7 +224,7 @@
 //           {!isVolunteerReport && (
 //             <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-8">
 //               <h3 className="text-white font-bold mb-1 flex items-center gap-2">
-//                 <span className="text-blue-500">📢</span> Public Communication
+//                 <span className="text-blue-500"></span> Public Communication
 //               </h3>
 //               <p className="text-slate-500 text-sm mb-4">
 //                 Secure channel to citizen.
@@ -351,7 +351,7 @@
 //           {/* INTERNAL LOGS */}
 //           <div className="bg-slate-900/50 border border-amber-500/20 rounded-2xl p-6">
 //             <h3 className="text-amber-500 font-bold mb-2 flex items-center gap-2 text-sm uppercase tracking-wider">
-//               📂 Internal Logs
+//               Internal Logs
 //             </h3>
 
 //             <div className="bg-black/40 rounded-xl p-4 mb-4 h-48 overflow-y-auto border border-slate-800">
@@ -541,7 +541,7 @@ export default function IncidentDetails() {
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-2xl">
           <div className="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-xl shadow-2xl p-6 transform transition-all scale-100">
             <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <span>📡</span> Assign Field Operative
+              <span></span> Assign Field Operative
             </h3>
 
             <div className="bg-slate-950 rounded-lg border border-slate-800 h-64 overflow-y-auto mb-6 p-2 space-y-2">
@@ -550,8 +550,8 @@ export default function IncidentDetails() {
                   key={v._id}
                   onClick={() => setSelectedVolunteer(v)}
                   className={`p-3 rounded border cursor-pointer flex justify-between items-center transition-all ${selectedVolunteer?._id === v._id
-                      ? "bg-blue-600/20 border-blue-500 text-white"
-                      : "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-600"
+                    ? "bg-blue-600/20 border-blue-500 text-white"
+                    : "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-600"
                     }`}
                 >
                   <div>
@@ -611,9 +611,9 @@ export default function IncidentDetails() {
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Status</p>
               <p className={`font-mono font-bold ${incident.status === 'PENDING' ? 'text-orange-400' :
-                  incident.status === 'ACTIVE' ? 'text-red-500' :
-                    incident.status === 'IN_PROGRESS' ? 'text-blue-400' :
-                      'text-emerald-500'
+                incident.status === 'ACTIVE' ? 'text-red-500' :
+                  incident.status === 'IN_PROGRESS' ? 'text-blue-400' :
+                    'text-emerald-500'
                 }`}>{incident.status}</p>
             </div>
           </div>
@@ -674,24 +674,22 @@ export default function IncidentDetails() {
           <button
             onClick={openAssignmentModal}
             className={`w-full py-4 rounded-xl font-bold text-sm border transition-all flex flex-col items-center gap-1 group ${incident.status === 'COMPLETED' || incident.status === 'RESOLVED'
-                ? "bg-slate-800/50 border-slate-800 text-slate-600 cursor-not-allowed"
-                : "bg-slate-800 hover:bg-slate-700 text-white border-slate-700"
+              ? "bg-slate-800/50 border-slate-800 text-slate-600 cursor-not-allowed"
+              : "bg-slate-800 hover:bg-slate-700 text-white border-slate-700"
               }`}
             disabled={incident.status === 'COMPLETED' || incident.status === 'RESOLVED'}
           >
-            <span className="text-lg group-hover:scale-110 transition-transform">🚨</span>
             <span>Deploy Rescue Team</span>
           </button>
 
           <button
             onClick={resolve}
             className={`w-full py-4 rounded-xl font-bold text-sm border transition-all flex flex-col items-center gap-1 ${incident.status === 'RESOLVED'
-                ? "bg-emerald-900/20 border-emerald-900/30 text-emerald-500 cursor-not-allowed"
-                : "bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border-slate-700"
+              ? "bg-emerald-900/20 border-emerald-900/30 text-emerald-500 cursor-not-allowed"
+              : "bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border-slate-700"
               }`}
             disabled={incident.status === 'RESOLVED'}
           >
-            <span className="text-lg">✅</span>
             <span>{incident.status === 'RESOLVED' ? "Case Closed" : "Resolve Incident"}</span>
           </button>
         </div>

@@ -113,22 +113,22 @@
 //             <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
 //             Live Incident Feed
 //           </h3>
-          
+
 //           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 //             {alerts.length === 0 && <p className="text-slate-500 italic">No active data streams found.</p>}
-            
+
 //             {alerts.map((a) => {
 //               // Determine Colors based on Source
 //               const isCitizen = a.typeTag === 'CITIZEN';
 //               const isVol = a.typeTag === 'VOLUNTEER';
-              
+
 //               const borderColor = isCitizen ? 'border-red-500' : isVol ? 'border-orange-500' : 'border-blue-500';
 //               const textColor = isCitizen ? 'text-red-500' : isVol ? 'text-orange-500' : 'text-blue-500';
 //               const bgColor = isCitizen ? 'bg-red-500/5' : isVol ? 'bg-orange-500/5' : 'bg-blue-500/5';
 
 //               return (
 //                 <div key={a._id} className={`bg-slate-900 border-l-4 ${borderColor} ${bgColor} p-6 rounded-r-xl shadow-sm hover:shadow-md transition-shadow`}>
-                  
+
 //                   {/* Card Header */}
 //                   <div className="flex justify-between items-start mb-3">
 //                     <span className={`text-[10px] font-bold px-2 py-1 rounded border ${borderColor} ${textColor}`}>
@@ -142,7 +142,7 @@
 //                   {/* Content */}
 //                   <h3 className="text-lg font-bold text-white mb-2">{a.title}</h3>
 //                   <p className="text-slate-400 text-sm mb-4 line-clamp-2">{a.message || a.description}</p>
-                  
+
 //                   {/* Footer Info */}
 //                   <div className="flex justify-between items-center text-xs text-slate-500 pt-4 border-t border-slate-800/50">
 //                     <span>Source: <span className="text-slate-300 font-semibold">{a.source}</span></span>
@@ -167,7 +167,7 @@
 //       {/* --- TAB 2: USER MANAGEMENT --- */}
 //       {activeTab === 'users' && (
 //         <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-8">
-          
+
 //           {/* Sub-Tabs for User Type */}
 //           <div className="flex border-b border-slate-800 mb-6">
 //             <button 
@@ -202,10 +202,10 @@
 //               <tbody className="divide-y divide-slate-800 text-sm">
 //                 {(personnelTab === 'volunteers' ? volunteers : citizens).map(u => (
 //                   <tr key={u._id} className="hover:bg-slate-800/30 transition-colors">
-                    
+
 //                     {/* Name */}
 //                     <td className="p-4 font-semibold text-white">{u.name}</td>
-                    
+
 //                     {/* Status Badge */}
 //                     <td className="p-4">
 //                       {personnelTab === 'volunteers' ? (
@@ -221,7 +221,7 @@
 
 //                     {/* Contact */}
 //                     <td className="p-4 text-slate-400 font-mono">{u.phone || u.email}</td>
-                    
+
 //                     {/* Actions */}
 //                     <td className="p-4 flex gap-2">
 //                       {/* --- Volunteer Actions --- */}
@@ -229,7 +229,7 @@
 //                         <button 
 //                           onClick={async () => {
 //                             if(u.approved && !window.confirm("Suspend this volunteer? They won't be able to login.")) return;
-                            
+
 //                             // Use the new toggle endpoint
 //                             try {
 //                               await api.put(`/admin/volunteers/${u._id}/toggle-status`);
@@ -287,7 +287,7 @@
 //                   key={sos._id}
 //                   className="bg-red-500/5 border border-red-500/20 p-6 rounded-xl shadow-md"
 //                 >
-//                   <h4 className="text-lg font-bold text-red-400 mb-2">🚨 SOS Triggered</h4>
+//                   <h4 className="text-lg font-bold text-red-400 mb-2">SOS Triggered</h4>
 
 //                   <p className="text-slate-300 text-sm mb-2">
 //                     <span className="font-bold text-white">Latitude:</span> {sos.latitude}

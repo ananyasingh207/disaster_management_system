@@ -35,16 +35,16 @@ export default function VolunteerNavbar() {
       {/* NAVIGATION (scrollable) */}
       <nav className="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-2">
         <NavLink to="/volunteer" end className={getLinkClass}>
-          <span>📌</span> Current Assignment
+          Current Assignment
         </NavLink>
         <NavLink to="/volunteer/training" className={getLinkClass}>
-          <span>🛡️</span> Training & Readiness
+          Training & Readiness
         </NavLink>
         <NavLink to="/volunteer/broadcasts" className={getLinkClass}>
-          <span>📡</span> Broadcasts
+          Broadcasts
         </NavLink>
         <NavLink to="/volunteer/profile" className={getLinkClass}>
-          <span>🆔</span> My Profile
+          My Profile
         </NavLink>
       </nav>
 
@@ -54,7 +54,7 @@ export default function VolunteerNavbar() {
           onClick={handleLogout}
           className="w-full flex items-center justify-center gap-2 px-4 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all text-sm font-medium"
         >
-          <span>🚪</span> Sign Out
+          Sign Out
         </button>
       </div>
 
