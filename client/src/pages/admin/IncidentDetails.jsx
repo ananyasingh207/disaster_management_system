@@ -470,38 +470,119 @@ export default function IncidentDetails() {
     }
   };
 
-  // Deploy Mission
-  const deployMission = async () => {
+  // ----------------------------------------------------------------
+  //                NEW DEPLOYMENT & MODAL LOGIC
+  // ----------------------------------------------------------------
+  const [showModal, setShowModal] = useState(false);
+  const [volunteers, setVolunteers] = useState([]);
+  const [selectedVolunteer, setSelectedVolunteer] = useState(null);
+  const [assigning, setAssigning] = useState(false);
+
+  // Fetch Volunteers when Modal Opens
+  const openAssignmentModal = async () => {
+    setShowModal(true);
     try {
-      await api.post("/admin/missions", {
-        title: incident.title,
-        description: incident.description,
-        location: incident.location,
-        severity: incident.severity,
-      });
-      alert("Mission deployed successfully!");
-      loadData();
+      const res = await api.get("/admin/volunteers");
+      setVolunteers(res.data || []);
     } catch (err) {
-      console.error("Failed to deploy mission", err);
+      console.error("Failed to fetch volunteers", err);
+      // Fallback Mock Data if API fails
+      setVolunteers([
+        { _id: "v1", name: "John Doe (Mock)", email: "john@rescue.org", skills: ["Medical", "Search"] },
+        { _id: "v2", name: "Jane Smith (Mock)", email: "jane@rescue.org", skills: ["Logistics"] }
+      ]);
     }
   };
+
+  const confirmAssignment = async () => {
+    if (!selectedVolunteer) return alert("Please select a volunteer.");
+
+    setAssigning(true);
+    try {
+      await api.post("/admin/deploy", {
+        sourceId: incident._id,
+        volunteerId: selectedVolunteer._id // Passed for context, even if schema doesn't store it yet
+      });
+
+      alert(`Incident Assigned to ${selectedVolunteer.name}`);
+      setShowModal(false);
+      loadData();
+    } catch (err) {
+      console.error("Assignment failed", err);
+      alert("Failed to assign volunteer.");
+    } finally {
+      setAssigning(false);
+    }
+  };
+
 
   // Resolve Incident
   const resolve = async () => {
+    if (!window.confirm("Mark this incident as RESOLVED? This will close the case.")) return;
+
     try {
-      await api.put(`/admin/incidents/${id}/status`, { status: "RESOLVED" });
+      await api.post("/admin/resolve", { id: incident._id });
       loadData();
     } catch (err) {
       console.error("Failed to resolve", err);
+      alert("Failed to resolve incident.");
     }
   };
 
-  if (loading) return <div className="text-white p-10">Loading incident details...</div>;
+  if (loading) return <div className="text-white p-10 font-mono animate-pulse">CONNECTING TO FIELD DATABASE...</div>;
 
   if (!incident) return <div className="text-red-500 p-10">Incident not found.</div>;
 
   return (
-    <div className="grid grid-cols-2 gap-8 h-full animate-fade-in">
+    <div className="grid grid-cols-2 gap-8 h-full animate-fade-in relative">
+
+      {/* ----------------- ASSIGNMENT MODAL ----------------- */}
+      {showModal && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm rounded-2xl">
+          <div className="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-xl shadow-2xl p-6 transform transition-all scale-100">
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <span>📡</span> Assign Field Operative
+            </h3>
+
+            <div className="bg-slate-950 rounded-lg border border-slate-800 h-64 overflow-y-auto mb-6 p-2 space-y-2">
+              {volunteers.map(v => (
+                <div
+                  key={v._id}
+                  onClick={() => setSelectedVolunteer(v)}
+                  className={`p-3 rounded border cursor-pointer flex justify-between items-center transition-all ${selectedVolunteer?._id === v._id
+                      ? "bg-blue-600/20 border-blue-500 text-white"
+                      : "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-600"
+                    }`}
+                >
+                  <div>
+                    <div className="font-bold text-sm">{v.name}</div>
+                    <div className="text-xs text-slate-500">{v.email}</div>
+                  </div>
+                  {selectedVolunteer?._id === v._id && <span className="text-blue-400 font-bold text-xs">SELECTED</span>}
+                </div>
+              ))}
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 rounded text-slate-400 hover:text-white text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmAssignment}
+                disabled={assigning}
+                className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded font-bold text-sm flex items-center gap-2"
+              >
+                {assigning ? "Transmitting..." : "Confirm Assignment"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
       {/* LEFT: Incident Information + Public Communication */}
       <div className="bg-slate-900/50 rounded-2xl p-8 border border-slate-800 space-y-6">
         <h3 className="text-xl font-bold text-white">Incident #{id.slice(-6)}</h3>
@@ -522,14 +603,18 @@ export default function IncidentDetails() {
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Severity</p>
               <p className={`font-bold ${incident.severity === "HIGH" || incident.severity === "CRITICAL" ? "text-red-500" :
-                  incident.severity === "MEDIUM" ? "text-amber-500" : "text-emerald-500"
+                incident.severity === "MEDIUM" ? "text-amber-500" : "text-emerald-500"
                 }`}>
                 {incident.severity}
               </p>
             </div>
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Status</p>
-              <p className="text-white font-medium">{incident.status}</p>
+              <p className={`font-mono font-bold ${incident.status === 'PENDING' ? 'text-orange-400' :
+                  incident.status === 'ACTIVE' ? 'text-red-500' :
+                    incident.status === 'IN_PROGRESS' ? 'text-blue-400' :
+                      'text-emerald-500'
+                }`}>{incident.status}</p>
             </div>
           </div>
 
@@ -587,8 +672,12 @@ export default function IncidentDetails() {
 
         <div className="grid grid-cols-2 gap-4">
           <button
-            onClick={deployMission}
-            className="w-full bg-slate-800 hover:bg-slate-700 text-white py-4 rounded-xl font-bold text-sm border border-slate-700 transition-all flex flex-col items-center gap-1 group"
+            onClick={openAssignmentModal}
+            className={`w-full py-4 rounded-xl font-bold text-sm border transition-all flex flex-col items-center gap-1 group ${incident.status === 'COMPLETED' || incident.status === 'RESOLVED'
+                ? "bg-slate-800/50 border-slate-800 text-slate-600 cursor-not-allowed"
+                : "bg-slate-800 hover:bg-slate-700 text-white border-slate-700"
+              }`}
+            disabled={incident.status === 'COMPLETED' || incident.status === 'RESOLVED'}
           >
             <span className="text-lg group-hover:scale-110 transition-transform">🚨</span>
             <span>Deploy Rescue Team</span>
@@ -596,10 +685,14 @@ export default function IncidentDetails() {
 
           <button
             onClick={resolve}
-            className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white py-4 rounded-xl font-bold text-sm border border-slate-700 transition-all flex flex-col items-center gap-1"
+            className={`w-full py-4 rounded-xl font-bold text-sm border transition-all flex flex-col items-center gap-1 ${incident.status === 'RESOLVED'
+                ? "bg-emerald-900/20 border-emerald-900/30 text-emerald-500 cursor-not-allowed"
+                : "bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border-slate-700"
+              }`}
+            disabled={incident.status === 'RESOLVED'}
           >
             <span className="text-lg">✅</span>
-            <span>Resolve Incident</span>
+            <span>{incident.status === 'RESOLVED' ? "Case Closed" : "Resolve Incident"}</span>
           </button>
         </div>
 

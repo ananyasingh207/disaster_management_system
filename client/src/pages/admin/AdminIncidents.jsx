@@ -94,11 +94,20 @@ export default function AdminIncidents() {
               </div>
 
               {/* Action Button */}
-              <Link to={`/admin/incidents/${a._id}`} className="mt-auto">
-                <button className="w-full bg-slate-900 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold py-3 rounded-lg transition-colors border border-slate-700 uppercase tracking-wide">
-                  Review Incident
-                </button>
-              </Link>
+              {/* Action Button */}
+              {["COMPLETED", "RESOLVED"].includes(a.status) ? (
+                <div className="mt-auto w-full py-3 rounded-lg bg-slate-800/30 border border-slate-700/30 text-center cursor-default">
+                  <span className={`text-xs font-bold uppercase tracking-widest ${a.status === 'COMPLETED' ? 'text-emerald-500/50' : 'text-slate-600'}`}>
+                    {a.status}
+                  </span>
+                </div>
+              ) : (
+                <Link to={`/admin/incidents/${a._id}`} className="mt-auto">
+                  <button className="w-full bg-slate-900 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold py-3 rounded-lg transition-colors border border-slate-700 uppercase tracking-wide">
+                    Review Incident
+                  </button>
+                </Link>
+              )}
             </div>
           ))}
         </div>

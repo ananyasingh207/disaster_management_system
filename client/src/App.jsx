@@ -112,23 +112,24 @@ import CitizenLayout from "./Layouts/CitizenLayout";
 // Volunteer pages
 import Dashboard from "./pages/volunteer/Dashboard";
 import MissionsList from "./pages/volunteer/MissionsList";
-import MissionDetails from "./pages/volunteer/MissionDetails";
+import IncidentDetails from "./pages/volunteer/IncidentDetails";
 import ReportIncident from "./pages/volunteer/ReportIncident";
 import Profile from "./pages/volunteer/Profile";
 import VolunteerLogin from "./pages/volunteer/VolunteerLogin";
 import VolunteerRegister from "./pages/volunteer/VolunteerRegister";
 import Training from "./pages/volunteer/Training";
 import Broadcasts from "./pages/volunteer/Broadcasts";
+import VolunteerIncidentDetails from "./pages/volunteer/IncidentDetails";
 
 // Admin pages
-import AdminDashboard from "./pages/admin/AdminDashboard"; // Can keep as fallback or remove
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import TeamAssignment from "./pages/admin/TeamAssignment";
 import BroadcastCenter from "./pages/admin/BroadcastCenter";
-import IncidentDetails from "./pages/admin/IncidentDetails";
+import AdminIncidentDetails from "./pages/admin/IncidentDetails";
 import AdminLogin from "./pages/admin/AdminLogin";
 import IncidentLog from "./pages/admin/IncidentLog";
 import AdminSOS from "./pages/admin/AdminSOS";
-import AdminIncidents from "./pages/admin/AdminIncidents"; // ← Add this back!
+import AdminIncidents from "./pages/admin/AdminIncidents";
 
 // Citizen pages
 import CitizenLogin from "./pages/citizen/CitizenLogin";
@@ -175,7 +176,7 @@ export default function App() {
           <Route path="/volunteer" element={<VolunteerLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="missions" element={<MissionsList />} />
-            <Route path="missions/:id" element={<MissionDetails />} />
+            <Route path="incidents/:id" element={<VolunteerIncidentDetails />} />
             <Route path="report" element={<ReportIncident />} />
             <Route path="profile" element={<Profile />} />
             <Route path="training" element={<Training />} />
@@ -193,7 +194,7 @@ export default function App() {
             <Route path="incidents" element={<AdminIncidents />} />
 
             {/* Incident Details */}
-            <Route path="incidents/:id" element={<IncidentDetails />} />
+            <Route path="incidents/:id" element={<AdminIncidentDetails />} />
 
             {/* Team Operations */}
             <Route path="teams" element={<TeamAssignment />} />
@@ -203,18 +204,15 @@ export default function App() {
 
             {/* Optional: Full Incident Log (table view) */}
             <Route path="log" element={<IncidentLog />} />
-
-            {/* Optional fallback if needed */}
-            {/* <Route path="dashboard" element={<AdminDashboard />} /> */}
           </Route>
 
           {/* 🔹 404 Catch-All */}
           <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
+        </Routes >
+      </div >
 
       {/* Global Floating SOS Button */}
-      <SOSbutton />
-    </BrowserRouter>
+      < SOSbutton />
+    </BrowserRouter >
   );
 }

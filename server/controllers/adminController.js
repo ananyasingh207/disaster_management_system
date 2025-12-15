@@ -548,19 +548,69 @@ exports.addAdminRecord = async (req, res) => {
 };
 
 // --- MISSIONS ---
+// --- INCIDENT OPERATIONS (Schema-Safe) ---
+
+// Deploy Rescue Team (Assign Volunteer)
 exports.deployMission = async (req, res) => {
   try {
-    const mission = await Mission.create(req.body);
-    res.json(mission);
+    console.log("🚀 Assigning Incident:", req.body);
+    // Support payload format
+    const id = req.body.sourceId || req.body.id || req.body._id;
+    const { volunteerId } = req.body;
+
+    if (!volunteerId) {
+      return res.status(400).json({ message: "Volunteer ID is required for assignment." });
+    }
+
+    // 1. Find Incident
+    const incident = await CitizenIncident.findById(id);
+    if (!incident) return res.status(404).json({ message: "Incident not found" });
+
+    // 2. Validate Status Check - Prevent double assignment
+    if (["IN_PROGRESS", "COMPLETED", "RESOLVED"].includes(incident.status)) {
+      return res.status(400).json({
+        message: `Cannot assign. Incident is already ${incident.status}`
+      });
+    }
+
+    // 3. Update Incident
+    incident.status = "IN_PROGRESS";
+    incident.assignedVolunteer = volunteerId;
+
+    await incident.save();
+    console.log(`✅ Incident Assigned to ${volunteerId} (IN_PROGRESS):`, id);
+
+    res.json({ message: "Volunteer Assigned Successfully", incident });
   } catch (err) {
-    res.status(500).json({ message: "Server Error" });
+    console.error("Assignment Error:", err);
+    res.status(500).json({ message: "Assignment Failed" });
+  }
+};
+
+// Resolve Incident (Admin Finalization)
+exports.resolveIncident = async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const incident = await CitizenIncident.findById(id);
+    if (!incident) return res.status(404).json({ message: "Incident not found" });
+
+    // Admin sets it to COMPLETED (Final State per requirements)
+    incident.status = "COMPLETED";
+    await incident.save();
+
+    res.json({ message: "Incident Resolved", incident });
+  } catch (err) {
+    console.error("Resolve Error:", err);
+    res.status(500).json({ message: "Resolution Failed" });
   }
 };
 
 exports.getAllMissions = async (req, res) => {
+  // Legacy support - return Incidents that are IN_PROGRESS
   try {
-    const missions = await Mission.find()
-      .populate("assignedTeam volunteer")
+    const missions = await CitizenIncident.find({ status: "IN_PROGRESS" })
+      .populate("assignedVolunteer", "name phone")
       .sort({ createdAt: -1 });
     res.json(missions);
   } catch (err) {
@@ -569,18 +619,8 @@ exports.getAllMissions = async (req, res) => {
 };
 
 exports.finalizeMission = async (req, res) => {
-  try {
-    const { missionId, decision } = req.body;
-    const mission = await Mission.findById(missionId);
-    if (!mission) return res.status(404).json({ message: "Mission not found" });
-
-    mission.status = decision === "APPROVE" ? "COMPLETED" : "IN_PROGRESS";
-    await mission.save();
-
-    res.json({ message: "Mission updated", mission });
-  } catch (err) {
-    res.status(500).json({ message: "Server Error" });
-  }
+  // Deprecated in favor of resolveIncident
+  res.json({ message: "Use resolve endpoint" });
 };
 
 // --- TEAMS ---

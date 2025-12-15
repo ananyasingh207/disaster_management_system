@@ -425,38 +425,24 @@ exports.updateVolunteer = async (req, res) => {
   }
 };
 
-// --- GET DASHBOARD DATA (Alerts + Active Missions) ---
+// --- GET DASHBOARD DATA (Strict: Assigned Only) ---
 exports.getDashboardData = async (req, res) => {
   try {
-    // 1️⃣ BROADCASTS — EVERYTHING from CitizenAlert
-    const alerts = await CitizenAlert.find()
-      .sort({ createdAt: -1 })
-      .lean();
+    // 1. Live Active (Removed - No Self Deploy)
+    const activeIncidents = [];
 
-    // 2️⃣ LIVE INCIDENTS — PENDING + ACTIVE
-    const activeIncidents = await CitizenIncident.find({
-      status: { $in: ["PENDING", "ACTIVE"] }
-    })
-      .sort({ createdAt: -1 })
-      .lean();
-
-    // 3️⃣ ONGOING OPERATIONS — IN_PROGRESS
-    const inProgressIncidents = await CitizenIncident.find({
+    // 2. Ongoing Operations (Assigned to Me)
+    // STRICT RULE: assignedVolunteer === req.user._id AND status === "IN_PROGRESS"
+    const assignedIncidents = await CitizenIncident.find({
+      assignedVolunteer: req.user._id,
       status: "IN_PROGRESS"
     })
       .sort({ createdAt: -1 })
       .lean();
 
-    // 🔎 DEBUG (optional, remove later)
-    console.log("Dashboard Alerts:", alerts.length);
-    console.log("Active Incidents:", activeIncidents.length);
-    console.log("In Progress Incidents:", inProgressIncidents.length);
-
-    // ✅ IMPORTANT: return EXACT keys frontend expects
     res.json({
-      alerts,
-      activeIncidents,
-      inProgressIncidents
+      activeIncidents, // Empty
+      assignedIncidents
     });
   } catch (err) {
     console.error("Dashboard Data Error:", err);
@@ -467,13 +453,8 @@ exports.getDashboardData = async (req, res) => {
 
 // --- MISSIONS / INCIDENTS ---
 exports.getAvailableMissions = async (req, res) => {
-  try {
-    // Return ACTIVE incidents (which are "Missions" in the new context)
-    const incidents = await CitizenIncident.find({ status: "ACTIVE" }).lean();
-    res.json(incidents);
-  } catch (err) {
-    res.status(500).json({ message: "Server Error" });
-  }
+  // Legacy route - Return empty list as self-deployment is disabled
+  res.json([]);
 };
 
 exports.acceptIncident = async (req, res) => {
@@ -481,9 +462,9 @@ exports.acceptIncident = async (req, res) => {
     const incident = await CitizenIncident.findById(req.params.id);
     if (!incident) return res.status(404).json({ message: "Incident not found" });
 
-    // Enforce Transistion: ACTIVE -> IN_PROGRESS
-    if (incident.status !== "ACTIVE") {
-      return res.status(400).json({ message: "Incident is not available for acceptance (Must be ACTIVE)" });
+    // Enforce Transistion: PENDING -> IN_PROGRESS
+    if (incident.status !== "PENDING") {
+      return res.status(400).json({ message: "Incident is not available used for self-deployment (Must be PENDING)" });
     }
 
     incident.status = "IN_PROGRESS";
@@ -517,7 +498,31 @@ exports.getIncident = async (req, res) => {
   }
 };
 
-// Deprecated or Legacy Mission Logic (Preserved if needed, but primary flow is now acceptIncident)
+// --- RESOLVE INCIDENT (Volunteer) ---
+exports.resolveIncident = async (req, res) => {
+  try {
+    const incident = await CitizenIncident.findById(req.params.id);
+    if (!incident) return res.status(404).json({ message: "Incident not found" });
+
+    // Enforce Strict Transition: IN_PROGRESS -> COMPLETED
+    if (incident.status !== "IN_PROGRESS") {
+      return res.status(400).json({ message: "Incident must be IN_PROGRESS to resolve." });
+    }
+
+    // 1. Update Incident Status
+    incident.status = "COMPLETED";
+    await incident.save();
+
+    // NOTE: Volunteer status remains unchanged (per strict requirement)
+
+    res.json({ message: "Incident Resolved", incident });
+  } catch (err) {
+    console.error("Resolve Incident Error:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// Deprecated Legacy Mission Logic (Preserved if needed)
 exports.completeMission = async (req, res) => {
   // ... existing code ...
   try {
@@ -528,9 +533,6 @@ exports.completeMission = async (req, res) => {
     await mission.save();
 
     await Volunteer.findByIdAndUpdate(req.user._id, { status: "AVAILABLE" });
-
-    // Also update associated incident if possible? But we don't have the link easily unless stored in mission
-    // For now, focusing on the new flow requested.
 
     res.json(mission);
   } catch (err) {

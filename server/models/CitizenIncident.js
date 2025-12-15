@@ -5,13 +5,13 @@
 //   type: { type: String, required: true },
 //   severity: { type: String, default: "LOW" },
 //   description: { type: String, required: true },
-  
+
 //   // We allow both 'address' or 'location' to be safe
 //   address: { type: String, required: true },
-  
+
 //   citizenId: { type: mongoose.Schema.Types.ObjectId, ref: "Citizen" },
 //   status: { type: String, default: "ACTIVE" },
-  
+
 //   // For Admin replies
 //    adminReplies: [{
 //     message: String,
@@ -59,6 +59,12 @@ const citizenIncidentSchema = new mongoose.Schema(
       type: String,
       enum: ["PENDING", "ACTIVE", "IN_PROGRESS", "COMPLETED", "RESOLVED"],
       default: "PENDING",
+    },
+
+    assignedVolunteer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Volunteer",
+      default: null,
     },
 
     adminReplies: [
