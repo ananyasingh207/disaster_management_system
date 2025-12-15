@@ -289,6 +289,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const VolunteerAlert = require("../models/VolunteerAlert");
 const Mission = require("../models/Mission");
+const CitizenIncident = require("../models/CitizenIncident");
+const CitizenAlert = require("../models/CitizenAlert");
 
 // --- SEND OTP ---
 // --- SEND OTP ---
@@ -423,46 +425,101 @@ exports.updateVolunteer = async (req, res) => {
   }
 };
 
-// --- DASHBOARD ---
+// --- GET DASHBOARD DATA (Alerts + Active Missions) ---
 exports.getDashboardData = async (req, res) => {
   try {
-    // Example: Fetch alerts, missions, etc. – expand as needed
-    const alerts = await VolunteerAlert.find({ volunteer: req.user._id }).lean();
-    const missions = await Mission.find({ volunteer: req.user._id }).lean();
-    res.json({ alerts, missions });
+    // 1️⃣ BROADCASTS — EVERYTHING from CitizenAlert
+    const alerts = await CitizenAlert.find()
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // 2️⃣ LIVE INCIDENTS — PENDING + ACTIVE
+    const activeIncidents = await CitizenIncident.find({
+      status: { $in: ["PENDING", "ACTIVE"] }
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // 3️⃣ ONGOING OPERATIONS — IN_PROGRESS
+    const inProgressIncidents = await CitizenIncident.find({
+      status: "IN_PROGRESS"
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // 🔎 DEBUG (optional, remove later)
+    console.log("Dashboard Alerts:", alerts.length);
+    console.log("Active Incidents:", activeIncidents.length);
+    console.log("In Progress Incidents:", inProgressIncidents.length);
+
+    // ✅ IMPORTANT: return EXACT keys frontend expects
+    res.json({
+      alerts,
+      activeIncidents,
+      inProgressIncidents
+    });
   } catch (err) {
+    console.error("Dashboard Data Error:", err);
     res.status(500).json({ message: "Server Error" });
   }
 };
 
-// --- MISSIONS ---
+
+// --- MISSIONS / INCIDENTS ---
 exports.getAvailableMissions = async (req, res) => {
   try {
-    const missions = await Mission.find({ status: "PENDING" }).lean();
-    res.json(missions);
+    // Return ACTIVE incidents (which are "Missions" in the new context)
+    const incidents = await CitizenIncident.find({ status: "ACTIVE" }).lean();
+    res.json(incidents);
   } catch (err) {
     res.status(500).json({ message: "Server Error" });
   }
 };
 
-exports.acceptMission = async (req, res) => {
+exports.acceptIncident = async (req, res) => {
   try {
-    const mission = await Mission.findById(req.params.id);
-    if (!mission || mission.status !== "PENDING") return res.status(400).json({ message: "Invalid mission" });
+    const incident = await CitizenIncident.findById(req.params.id);
+    if (!incident) return res.status(404).json({ message: "Incident not found" });
 
-    mission.volunteer = req.user._id;
-    mission.status = "ACCEPTED";
-    await mission.save();
+    // Enforce Transistion: ACTIVE -> IN_PROGRESS
+    if (incident.status !== "ACTIVE") {
+      return res.status(400).json({ message: "Incident is not available for acceptance (Must be ACTIVE)" });
+    }
 
-    await Volunteer.findByIdAndUpdate(req.user._id, { status: "DEPLOYED" });
+    incident.status = "IN_PROGRESS";
+    await incident.save();
 
-    res.json(mission);
+    res.json({ message: "Incident Accepted", incident });
   } catch (err) {
     res.status(500).json({ message: "Server Error" });
   }
 };
 
+// --- GET SINGLE INCIDENT (Option A) ---
+exports.getIncident = async (req, res) => {
+  try {
+    const incident = await CitizenIncident.findById(req.params.id).lean();
+    if (!incident) {
+      return res.status(404).json({ message: "Incident not found" });
+    }
+
+    // DEBUG LOG
+    console.log("DEBUG BACKEND - Single Incident:", {
+      id: incident._id,
+      location: incident.location,
+      address: incident.location?.address
+    });
+
+    res.json(incident);
+  } catch (err) {
+    console.error("Get Incident Error:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// Deprecated or Legacy Mission Logic (Preserved if needed, but primary flow is now acceptIncident)
 exports.completeMission = async (req, res) => {
+  // ... existing code ...
   try {
     const mission = await Mission.findById(req.params.id);
     if (!mission || mission.volunteer.toString() !== req.user._id.toString()) return res.status(403).json({ message: "Not authorized" });
@@ -472,12 +529,8 @@ exports.completeMission = async (req, res) => {
 
     await Volunteer.findByIdAndUpdate(req.user._id, { status: "AVAILABLE" });
 
-    await VolunteerAlert.create({
-      volunteer: req.user._id,
-      type: "MISSION_UPDATE",
-      message: `Mission ${mission.title} completed`,
-      mission: mission._id,
-    });
+    // Also update associated incident if possible? But we don't have the link easily unless stored in mission
+    // For now, focusing on the new flow requested.
 
     res.json(mission);
   } catch (err) {

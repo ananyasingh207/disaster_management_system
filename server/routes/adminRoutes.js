@@ -57,7 +57,7 @@
 // module.exports = router;
 
 const express = require("express");
-const { 
+const {
   adminLogin,
   getVolunteers,
   toggleVolunteerStatus,
@@ -72,7 +72,8 @@ const {
   toggleCitizenStatus,
   deployMission,
   getIncidentById,
-  acknowledgeIncident,
+  acknowledgeIncident, // Kept for legacy if needed, but resolveIncident is preferred
+  resolveIncident,
   sendCitizenReply,
   addAdminRecord,
   getReliefRequests,
@@ -93,7 +94,7 @@ router.use(protectAdmin);
 // Incidents & Deployment
 router.get("/incidents/:id", getIncidentById);
 router.post("/deploy", deployMission);
-router.post("/acknowledge", acknowledgeIncident);
+router.post("/resolve", resolveIncident); // New Route
 router.post("/incidents/reply", sendCitizenReply);
 router.post("/incidents/record", addAdminRecord);
 

@@ -118,6 +118,7 @@ import Profile from "./pages/volunteer/Profile";
 import VolunteerLogin from "./pages/volunteer/VolunteerLogin";
 import VolunteerRegister from "./pages/volunteer/VolunteerRegister";
 import Training from "./pages/volunteer/Training";
+import Broadcasts from "./pages/volunteer/Broadcasts";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard"; // Can keep as fallback or remove
@@ -178,6 +179,7 @@ export default function App() {
             <Route path="report" element={<ReportIncident />} />
             <Route path="profile" element={<Profile />} />
             <Route path="training" element={<Training />} />
+            <Route path="broadcasts" element={<Broadcasts />} />
           </Route>
 
           {/* 🔹 Admin Command Center */}
@@ -186,10 +188,10 @@ export default function App() {
             <Route index element={<Navigate to="sos" replace />} />
 
             <Route path="sos" element={<AdminSOS />} />
-            
+
             {/* Live Incidents List (with tabs for Citizen/Volunteer) */}
             <Route path="incidents" element={<AdminIncidents />} />
-            
+
             {/* Incident Details */}
             <Route path="incidents/:id" element={<IncidentDetails />} />
 

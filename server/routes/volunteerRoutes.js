@@ -46,7 +46,8 @@ const {
   updateVolunteer,
   getDashboardData,
   getAvailableMissions,
-  acceptMission,
+  acceptIncident,
+  getIncident,
   completeMission,
   submitTraining
 } = require("../controllers/volunteerController");
@@ -59,7 +60,8 @@ router.put("/me", updateVolunteer);
 router.get("/dashboard", getDashboardData); // Dashboard Feed
 router.post("/training/submit", submitTraining);
 router.get("/missions", getAvailableMissions); // Mission List
-router.put("/missions/:id/accept", acceptMission);
+router.get("/incidents/:id", getIncident); // <--- NEW ROUTE for Details
+router.put("/incidents/:id/accept", acceptIncident);
 router.put("/missions/:id/complete", completeMission);
 
 module.exports = router;

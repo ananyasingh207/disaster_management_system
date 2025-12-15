@@ -35,38 +35,26 @@ export default function VolunteerNavbar() {
       {/* NAVIGATION (scrollable) */}
       <nav className="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-2">
         <NavLink to="/volunteer" end className={getLinkClass}>
-          <span>🏠</span> Dashboard
+          <span>📌</span> Current Assignment
         </NavLink>
         <NavLink to="/volunteer/training" className={getLinkClass}>
-          <span>🎓</span> Training Center
+          <span>🛡️</span> Training & Readiness
         </NavLink>
-        <NavLink to="/volunteer/missions" className={getLinkClass}>
-          <span>🚀</span> Missions
-        </NavLink>
-        <NavLink to="/volunteer/report" className={getLinkClass}>
-          <span>📝</span> Report Incident
+        <NavLink to="/volunteer/broadcasts" className={getLinkClass}>
+          <span>📡</span> Broadcasts
         </NavLink>
         <NavLink to="/volunteer/profile" className={getLinkClass}>
-          <span>👤</span> My Profile
+          <span>🆔</span> My Profile
         </NavLink>
       </nav>
 
-      {/* STATUS + LOGOUT (NON-scrollable bottom) */}
-      <div className="p-4 m-4 bg-slate-800/50 rounded-xl border border-slate-700 backdrop-blur-sm">
-        <p className="text-[10px] uppercase text-slate-500 font-bold tracking-wider mb-2">
-          Status
-        </p>
-        <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 mb-4">
-          <div className="w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_#10b981]"></div>
-          ONLINE
-        </div>
-
-        {/* LOGOUT BUTTON */}
+      {/* FOOTER ACTIONS */}
+      <div className="p-4 border-t border-slate-800">
         <button
           onClick={handleLogout}
-          className="w-full px-4 py-2 bg-red-600 text-white rounded-lg font-bold text-sm hover:bg-red-500 transition-all"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all text-sm font-medium"
         >
-          🚪 Logout
+          <span>🚪</span> Sign Out
         </button>
       </div>
 

@@ -110,42 +110,51 @@
 //   }
 // };
 
-// // --- DEPLOY MISSION ---
-// exports.deployMission = async (req, res) => {
-//   try {
-//     const { sourceId, teamId, priority, title, description, location, type } = req.body;
+// // --- RESOLVE INCIDENT (Sets Status -> RESOLVED) ---
+exports.resolveIncident = async (req, res) => {
+  try {
+    const { id } = req.body;
 
-//     let incident = await CitizenIncident.findById(sourceId);
-//     if (!incident) incident = await CitizenAlert.findById(sourceId);
+    const incident = await CitizenIncident.findById(id);
+    if (!incident) return res.status(404).json({ message: "Incident not found" });
 
-//     const missionData = {
-//       title: title || incident?.title || "Emergency Mission",
-//       description: description || incident?.description || incident?.message || "No description",
-//       type: type || incident?.type || "EMERGENCY",
-//       severity: priority || incident?.severity || "HIGH",
-//       location: location || incident?.address || incident?.region || "Unknown",
-//       status: "IN_PROGRESS",
-//       assignedTeam: teamId || null,
-//       sourceIncidentId: sourceId
-//     };
+    // Status is allowed to jump to RESOLVED from any state (usually IN_PROGRESS or ACTIVE)
+    incident.status = "RESOLVED";
+    await incident.save();
 
-//     const newMission = await Mission.create(missionData);
+    res.json({ message: "Incident Resolved", incident });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Resolution Failed" });
+  }
+};
 
-//     if (incident) {
-//       incident.status = "MISSION_CREATED";
-//       await incident.save();
-//     }
+// // --- DEPLOY RESCUE TEAM (Sets Status -> ACTIVE) ---
+exports.deployMission = async (req, res) => {
+  try {
+    const { sourceId } = req.body;
 
-//     if (teamId) {
-//       await Volunteer.findByIdAndUpdate(teamId, { status: "IN_PROGRESS" });
-//     }
+    // 1. Find Incident
+    let incident = await CitizenIncident.findById(sourceId);
+    if (!incident) return res.status(404).json({ message: "Incident not found" });
 
-//     res.json({ message: "Deployed", mission: newMission });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Deployment Failed" });
-//   }
-// };
+    // 2. Check Rules
+    if (incident.status !== "PENDING") {
+      return res.status(400).json({
+        message: `Cannot deploy. Incident is ${incident.status} (Must be PENDING)`
+      });
+    }
+
+    // 3. Update Status -> ACTIVE
+    incident.status = "ACTIVE";
+    await incident.save();
+
+    res.json({ message: "Rescue Team Deployed", incident });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Deployment Failed" });
+  }
+};
 
 // // --- MISSION & TEAM HELPERS ---
 // exports.getAllMissions = async (req, res) => { const m = await Mission.find(); res.json(m); };
@@ -360,7 +369,9 @@ exports.getAlerts = async (req, res) => {
 
     // 2. Citizen Incidents Only
     if (type === "CITIZEN_INCIDENT") {
-      const incidents = await CitizenIncident.find({})
+      const incidents = await CitizenIncident.find({
+        status: { $ne: "RESOLVED" }
+      })
         .sort({ createdAt: -1 })
         .populate("citizen", "name phone")
         .lean();
@@ -390,7 +401,7 @@ exports.getAlerts = async (req, res) => {
     // Kept for dashboards that might still request without type
     const citizenAlerts = await CitizenAlert.find({ sourceType: "ADMIN" }).lean();
     const volunteerAlerts = await VolunteerAlert.find().lean();
-    const citizenIncidents = await CitizenIncident.find().sort({ createdAt: -1 }).lean();
+    const citizenIncidents = await CitizenIncident.find({ status: { $ne: "RESOLVED" } }).sort({ createdAt: -1 }).lean();
     const volunteerReports = await Report.find().populate("reportedBy", "name").lean();
 
     const cBroadcasts = citizenAlerts.map(a => ({ ...a, typeTag: 'BROADCAST', severity: a.severity || 'INFO' }));

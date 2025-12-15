@@ -4,9 +4,8 @@ import { Link } from "react-router-dom";
 
 export default function Dashboard() {
   const [data, setData] = useState({
-    adminAlerts: [],
-    citizenAlerts: [],
-    activeMissions: [],
+    citizenAlerts: [], // Mapped to InProgress
+    activeMissions: [], // Mapped to Active
   });
   const [loading, setLoading] = useState(true);
 
@@ -15,16 +14,14 @@ export default function Dashboard() {
       try {
         const res = await api.get("/volunteer/dashboard");
 
-        // 🔒 Normalize backend response (CRASH FIX)
+        // 🔒 Normalize backend response
         setData({
-          adminAlerts: res.data.adminAlerts || [],
-          citizenAlerts: res.data.citizenAlerts || [],
-          activeMissions: res.data.activeMissions || [],
+          citizenAlerts: res.data.inProgressIncidents || [],
+          activeMissions: res.data.activeIncidents || [],
         });
       } catch (err) {
         console.error("Dashboard load failed:", err);
         setData({
-          adminAlerts: [],
           citizenAlerts: [],
           activeMissions: [],
         });
@@ -39,7 +36,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="p-10 text-white font-mono animate-pulse">
-        SYNCING TACTICAL DATA...
+        SYNCING COMMAND DATA...
       </div>
     );
   }
@@ -48,139 +45,135 @@ export default function Dashboard() {
     <div className="max-w-6xl mx-auto pb-12 animate-fade-in-up">
       {/* HEADER */}
       <div className="mb-8 border-b border-slate-800 pb-6">
-        <h1 className="text-4xl font-black text-white tracking-tight mb-2">
-          Volunteer Dashboard
+        <h1 className="text-3xl font-bold text-white tracking-tight mb-2">
+          Command Dashboard
         </h1>
-        <p className="text-slate-400 font-medium">
-          Live situational awareness and command feed.
+        <p className="text-slate-400 text-sm">
+          Operational overview for active deployments and alerts.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* LEFT COLUMN */}
-        <div className="space-y-8">
-          {/* ACTIVE MISSIONS */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl border-l-4 border-l-emerald-500">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              Current Assignment
+      <div className="flex flex-col gap-12">
+        {/* SECTION 1: LIVE ACTIVE INCIDENTS (Needs Action) */}
+        <section>
+          <div className="flex items-center gap-3 mb-6">
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+              Live Active Incidents (Awaiting Response)
             </h3>
-
-            {data.activeMissions.length === 0 ? (
-              <div className="text-slate-500 italic py-4 border border-dashed border-slate-800 rounded-lg text-center text-sm">
-                No active directives. Standby mode engaged.
-              </div>
-            ) : (
-              data.activeMissions.map((m) => (
-                <div
-                  key={m._id}
-                  className="bg-slate-800/50 p-4 rounded-xl border border-slate-700"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="text-lg font-bold text-white">
-                      {m.title || "Untitled Mission"}
-                    </h4>
-                    <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded border border-emerald-500/30 font-bold tracking-wider">
-                      ACTIVE
-                    </span>
-                  </div>
-                  <p className="text-sm text-slate-300 mb-4">
-                    {m.description || "No description provided."}
-                  </p>
-                  <Link to={`/volunteer/missions/${m._id}`}>
-                    <button className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-lg text-xs transition-colors">
-                      VIEW TACTICAL DETAILS →
-                    </button>
-                  </Link>
-                </div>
-              ))
-            )}
+            <span className="px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-xs font-mono text-slate-400">
+              {data.activeMissions.length} DETECTED
+            </span>
           </div>
 
-          {/* ADMIN BROADCASTS */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-            <h3 className="text-lg font-bold text-blue-400 mb-4 flex items-center gap-2 uppercase tracking-wider text-xs">
-              <span>📡</span> Command Broadcasts
-            </h3>
-
-            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-              {data.adminAlerts.length === 0 && (
-                <p className="text-slate-500 text-sm">No recent signals.</p>
-              )}
-
-              {data.adminAlerts.map((a) => (
+          {data.activeMissions.length === 0 ? (
+            <div className="py-12 border border-dashed border-slate-800 rounded-xl text-center bg-slate-950/30">
+              <p className="text-slate-500 text-sm font-medium">
+                No active incidents requiring immediate intervention.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {data.activeMissions.map((m) => (
                 <div
-                  key={a._id}
-                  className="p-4 bg-slate-950/50 rounded-xl border border-slate-800 hover:border-slate-700 transition-colors"
+                  key={m._id}
+                  className="bg-slate-800/40 p-6 rounded-xl border border-slate-700 hover:border-slate-500 transition-all shadow-sm group"
                 >
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-xs font-bold text-amber-500">
-                      [{a.type || "INFO"}]
-                    </span>
-                    <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
-                        a.severity === "CRITICAL"
-                          ? "border-red-500 text-red-500 bg-red-500/10"
-                          : "border-slate-600 text-slate-400"
-                      }`}
-                    >
-                      {a.severity || "NORMAL"}
+                  {/* DEBUG LOG */}
+                  {console.log("DEBUG INCIDENT ITEM:", m)}
+
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex gap-2">
+                      <span className={`text-[10px] px-3 py-1 rounded-full border font-bold tracking-wider ${m.status === 'PENDING' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' :
+                          'bg-red-500/10 text-red-400 border-red-500/20'
+                        }`}>
+                        {m.status || "ACTIVE"}
+                      </span>
+                      <span className="text-[10px] bg-slate-700/50 text-slate-300 px-3 py-1 rounded-full border border-slate-600 font-mono tracking-wider">
+                        {m.sourceType === "CITIZEN" ? "Citizen Report" : m.sourceType || "System"}
+                      </span>
+                    </div>
+                    <span className="text-xs text-slate-500 font-mono">
+                      {m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "--:--"}
                     </span>
                   </div>
-                  <p className="text-sm text-slate-200 mb-2">
-                    {a.message}
+
+                  <h4 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors mb-2">
+                    {m.title || "Emergency Incident"}
+                  </h4>
+
+                  <p className="text-sm text-slate-400 leading-relaxed mb-6 line-clamp-2">
+                    {m.description || "No operational details provided."}
                   </p>
-                  <div className="text-[10px] text-slate-600 font-mono">
-                    Target: {a.region || "Global"} •{" "}
-                    {a.createdAt
-                      ? new Date(a.createdAt).toLocaleTimeString()
-                      : "--"}
+
+                  <div className="flex items-center justify-between border-t border-slate-700/50 pt-4 mt-auto">
+                    <div className="text-xs text-slate-500 font-mono">
+                      {/* Priority: location.address -> String location -> Fallback */}
+                      📍 {m.location?.address
+                        ? m.location.address
+                        : (typeof m.location === 'string' ? m.location : 'Location unavailable')}
+                    </div>
+                    <Link to={`/ volunteer / missions / ${m._id} `}>
+                      <button className="bg-slate-900 border border-slate-600 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded text-xs transition-colors">
+                        View Details
+                      </button>
+                    </Link>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-        </div>
+          )}
+        </section>
 
-        {/* RIGHT COLUMN */}
-        <div className="bg-slate-900 border border-red-500/20 rounded-2xl p-6 shadow-xl h-fit">
-          <h3 className="text-xl font-bold text-red-500 mb-6 flex items-center gap-2">
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-            Citizen Distress Signals
+        {/* SECTION 2: ONGOING OPERATIONS (In Progress) */}
+        <section className="bg-slate-900/30 border border-slate-800/60 rounded-2xl p-8">
+          <h3 className="text-lg font-bold text-slate-400 mb-6 flex items-center gap-2 uppercase tracking-wider text-xs">
+            <span>🛡️</span> Ongoing Operations (In Progress)
           </h3>
 
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {data.citizenAlerts.length === 0 && (
-              <div className="text-center py-12 text-slate-600 border border-dashed border-slate-800 rounded-xl">
-                No active distress signals in your sector.
+              <div className="col-span-full py-12 text-center text-slate-600 border border-dashed border-slate-800 rounded-xl text-sm italic">
+                No active operations in progress.
               </div>
             )}
 
             {data.citizenAlerts.map((c) => (
               <div
                 key={c._id}
-                className="relative bg-red-900/10 border border-red-500/30 p-5 rounded-xl hover:bg-red-900/20 transition-colors"
+                className="bg-slate-800/20 border border-slate-700/50 p-5 rounded-xl hover:bg-slate-800/30 transition-all opacity-80 hover:opacity-100"
               >
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold text-white">
-                    {c.type || "Unknown"} Incident
-                  </h4>
-                  <span className="text-[10px] font-mono text-red-300/70">
-                    {c.createdAt
-                      ? new Date(c.createdAt).toLocaleTimeString()
-                      : "--"}
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-bold text-emerald-500 uppercase tracking-wide">
+                      {c.status || "IN PROGRESS"}
+                    </span>
+                    <span className="text-[10px] text-slate-500 uppercase tracking-wide">
+                      {c.sourceType === "CITIZEN" ? "Citizen Report" : c.sourceType || "System"}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono text-slate-600">
+                    ID: {c._id.slice(-4)}
                   </span>
                 </div>
-                <p className="text-sm text-slate-300 mb-3">
-                  {c.description || "No details available."}
+
+                <h5 className="font-bold text-slate-300 text-sm mb-1 truncate">
+                  {c.title}
+                </h5>
+
+                <p className="text-xs text-slate-500 mb-3 line-clamp-2">
+                  {c.description || "Operational task."}
                 </p>
-                <div className="flex items-center gap-2 text-xs text-slate-500 font-mono bg-black/20 p-2 rounded w-fit">
-                  📍 {c.location || "Unknown Location"}
+
+                <div className="flex items-center gap-2 text-[10px] text-slate-600 font-mono">
+                  <span>
+                    📍 {c.location?.address || (typeof c.location === 'string' ? c.location : 'Location unavailable')}
+                  </span>
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );
