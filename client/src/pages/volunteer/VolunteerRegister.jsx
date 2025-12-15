@@ -48,7 +48,7 @@ export default function VolunteerRegister() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#0a0a0a] relative overflow-hidden">
-      
+
       {/* Soft Red Glow */}
       <div className="absolute w-[550px] h-[550px] bg-red-700/15 rounded-full blur-[150px] -top-24 -left-24 pointer-events-none"></div>
 
@@ -80,7 +80,7 @@ export default function VolunteerRegister() {
 
         {/* FORM */}
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
+
           {/* Identity Section */}
           <div className="space-y-4">
             <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
@@ -182,11 +182,10 @@ export default function VolunteerRegister() {
             type="submit"
             disabled={!otpSent}
             className={`md:col-span-2 mt-4 py-3.5 rounded-lg font-bold text-sm tracking-widest uppercase 
-                        transition-all shadow-lg ${
-                          otpSent
-                            ? "bg-red-600 hover:bg-red-500 text-white"
-                            : "bg-slate-800 text-slate-600 cursor-not-allowed"
-                        }`}
+                        transition-all shadow-lg ${otpSent
+                ? "bg-red-600 hover:bg-red-500 text-white"
+                : "bg-slate-800 text-slate-600 cursor-not-allowed"
+              }`}
           >
             {otpSent ? "Submit Registration" : "Verify Email First"}
           </button>

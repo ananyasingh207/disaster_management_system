@@ -42,7 +42,7 @@
 
 //     const cBroadcasts = citizenAlerts.map(a => ({ ...a, typeTag: 'BROADCAST', severity: a.severity || 'INFO' }));
 //     const vBroadcasts = volunteerAlerts.map(a => ({ ...a, typeTag: 'BROADCAST', severity: a.severity || 'INFO' }));
-    
+
 //     const cReports = citizenIncidents.map(i => ({
 //       _id: i._id, title: i.title, message: i.description, region: i.address, severity: i.severity, status: i.status, createdAt: i.createdAt, typeTag: 'CITIZEN', source: "Citizen Report"
 //     }));
@@ -64,10 +64,10 @@
 // exports.getIncidentById = async (req, res) => {
 //   try {
 //     const { id } = req.params;
-    
+
 //     // 1. Citizen Incidents
 //     let incident = await CitizenIncident.findById(id).populate("citizenId", "name phone email").lean();
-    
+
 //     // 2. Volunteer Reports
 //     if (!incident) {
 //       incident = await Report.findById(id).populate("reportedBy", "name phone email").lean();
@@ -89,12 +89,12 @@
 // exports.acknowledgeIncident = async (req, res) => {
 //   try {
 //     const { sourceId } = req.body;
-    
+
 //     // Update status to 'COMPLETED' so it gets removed from the Pending list
 //     const updateData = { status: "COMPLETED" };
 
 //     let updated = await Report.findByIdAndUpdate(sourceId, updateData, { new: true });
-    
+
 //     if (!updated) {
 //       updated = await CitizenIncident.findByIdAndUpdate(sourceId, updateData, { new: true });
 //     }
@@ -164,13 +164,13 @@
 // exports.toggleVolunteerStatus = async (req, res) => {
 //   try {
 //     const volunteer = await Volunteer.findById(req.params.id);
-    
+
 //     if (!volunteer) {
 //       return res.status(404).json({ message: "Volunteer not found" });
 //     }
 
 //     volunteer.approved = !volunteer.approved;
-    
+
 //     await volunteer.save();
 
 //     res.json({ 
@@ -249,7 +249,7 @@
 // exports.addAdminRecord = async (req, res) => {
 //   try {
 //     const { id, note } = req.body;
-    
+
 //     // 1. Try Citizen Incident
 //     let updated = await CitizenIncident.findByIdAndUpdate(id, { $push: { adminNotes: { note } } }, { new: true });
 
@@ -271,11 +271,11 @@
 // exports.finalizeMission = async (req, res) => {
 //   try {
 //     const { id, decision } = req.body; // decision: "APPROVE" or "REJECT"
-    
+
 //     // Find the Mission (or Incident converted to mission)
 //     // We check Mission collection first as deployment creates a Mission document
 //     let mission = await Mission.findById(id); 
-    
+
 //     // Fallback: If your system uses Incident ID for routing, find mission by sourceIncidentId
 //     if (!mission) {
 //        mission = await Mission.findOne({ sourceIncidentId: id });
@@ -286,7 +286,7 @@
 //     if (decision === "APPROVE") {
 //       // 1. Mark Mission Completed
 //       mission.status = "COMPLETED";
-      
+
 //       // 2. Free up the Volunteer
 //       if (mission.assignedTeam) {
 //         await Volunteer.findByIdAndUpdate(mission.assignedTeam, { status: "AVAILABLE" });
@@ -339,9 +339,56 @@ exports.getAllUsers = async (req, res) => {
 };
 
 // --- GET LIVE FEED (Alerts + Reports) ---
+// --- GET LIVE FEED (Alerts + Reports) ---
+// --- GET LIVE FEED (Alerts + Reports) ---
 exports.getAlerts = async (req, res) => {
   try {
-    const citizenAlerts = await CitizenAlert.find().lean();
+    const { type } = req.query;
+
+    // 1. Admin Broadcasts Only
+    if (type === "BROADCAST") {
+      const broadcasts = await CitizenAlert.find({
+        sourceType: "ADMIN"
+      }).sort({ createdAt: -1 }).lean();
+
+      return res.json(broadcasts.map(b => ({
+        ...b,
+        typeTag: 'BROADCAST',
+        audience: b.audience || "ALL"
+      })));
+    }
+
+    // 2. Citizen Incidents Only
+    if (type === "CITIZEN_INCIDENT") {
+      const incidents = await CitizenIncident.find({})
+        .sort({ createdAt: -1 })
+        .populate("citizen", "name phone")
+        .lean();
+
+      return res.json(incidents.map(i => ({
+        ...i,
+        typeTag: 'INCIDENT',
+        source: "Citizen Report"
+      })));
+    }
+
+    // 3. Volunteer Reports Only
+    if (type === "VOLUNTEER_REPORT") {
+      const reports = await Report.find({})
+        .populate("reportedBy", "name")
+        .sort({ createdAt: -1 })
+        .lean();
+
+      return res.json(reports.map(r => ({
+        ...r,
+        typeTag: 'REPORT',
+        source: r.reportedBy ? `Vol. ${r.reportedBy.name}` : "Volunteer"
+      })));
+    }
+
+    // --- LEGACY FALLBACK (Global Feed) ---
+    // Kept for dashboards that might still request without type
+    const citizenAlerts = await CitizenAlert.find({ sourceType: "ADMIN" }).lean();
     const volunteerAlerts = await VolunteerAlert.find().lean();
     const citizenIncidents = await CitizenIncident.find().sort({ createdAt: -1 }).lean();
     const volunteerReports = await Report.find().populate("reportedBy", "name").lean();
@@ -349,13 +396,14 @@ exports.getAlerts = async (req, res) => {
     const cBroadcasts = citizenAlerts.map(a => ({ ...a, typeTag: 'BROADCAST', severity: a.severity || 'INFO' }));
     const vBroadcasts = volunteerAlerts.map(a => ({ ...a, typeTag: 'BROADCAST', severity: a.severity || 'INFO' }));
     const incidents = citizenIncidents.map(i => ({ ...i, typeTag: 'INCIDENT', severity: i.severity }));
-    const reports = volunteerReports.map(r => ({ ...r, typeTag: 'REPORT', severity: 'INFO', author: r.reportedBy.name }));
+    const reports = volunteerReports.map(r => ({ ...r, typeTag: 'REPORT', severity: 'INFO', author: r.reportedBy?.name }));
 
     const feed = [...cBroadcasts, ...vBroadcasts, ...incidents, ...reports]
-      .sort((a, b) => b.createdAt - a.createdAt);
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     res.json(feed);
   } catch (err) {
+    console.error("Get Alerts Error:", err);
     res.status(500).json({ message: "Server Error" });
   }
 };
@@ -409,9 +457,19 @@ exports.toggleVolunteerStatus = async (req, res) => {
 // --- ALERTS ---
 exports.createCitizenAlert = async (req, res) => {
   try {
-    const alert = await CitizenAlert.create(req.body);
+    const alertData = {
+      ...req.body,
+      // Enforce Admin Defaults
+      sourceType: "ADMIN",
+      status: "ACTIVE",
+      // Ensure type is BROADCAST if not set (though frontend should send it)
+      type: req.body.type || "BROADCAST"
+    };
+
+    const alert = await CitizenAlert.create(alertData);
     res.json(alert);
   } catch (err) {
+    console.error("❌ Broadcast Creation Failed:", err);
     res.status(500).json({ message: "Server Error" });
   }
 };

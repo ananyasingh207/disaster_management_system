@@ -15,23 +15,12 @@ const CitizenAlert = require("../models/CitizenAlert");
 
 /**
  * GET /api/citizen/alerts
- * Fetch active alerts for citizens
+ * Fetch ALL active alerts for citizens (HARD RESET - No Filtering)
  */
 exports.getCitizenAlerts = async (req, res) => {
   try {
-    const now = new Date();
-
-    // Auto-expire alerts if expiry time passed
-    await CitizenAlert.updateMany(
-      { expiresAt: { $lt: now }, status: "ACTIVE" },
-      { status: "EXPIRED", active: false }
-    );
-
-    // Fetch only active alerts
-    const alerts = await CitizenAlert.find({
-      status: "ACTIVE",
-      active: true,
-    })
+    // TEMPORARY RESET: Fetch all alerts directly
+    const alerts = await CitizenAlert.find({})
       .sort({ createdAt: -1 })
       .lean();
 

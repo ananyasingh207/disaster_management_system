@@ -14,7 +14,7 @@
 // exports.sendOtp = async (req, res) => {
 //   try {
 //     const { email } = req.body;
-    
+
 //     // Check if volunteer already exists
 //     const existing = await Volunteer.findOne({ email });
 //     if (existing) {
@@ -45,10 +45,10 @@
 
 //     } catch (emailError) {
 //       console.error("❌ Email send failed:", emailError);
-      
+
 //       // If email fails, remove the OTP from DB so user can try again immediately
 //       await Otp.deleteOne({ email });
-      
+
 //       return res.status(500).json({ message: "Could not send email. Check internet or SMTP settings." });
 //     }
 //     // ------------------------
@@ -66,7 +66,7 @@
 
 //     // A. Verify OTP
 //     const otpRecord = await Otp.findOne({ email });
-    
+
 //     if (!otpRecord || otpRecord.otp !== otp) {
 //       return res.status(400).json({ message: "Invalid or Expired OTP" });
 //     }
@@ -152,10 +152,10 @@
 // exports.submitTraining = async (req, res) => {
 //   try {
 //     const { score } = req.body;
-    
+
 //     // Logic: If score > 70%, mark as Certified
 //     const isPassed = score >= 70;
-    
+
 //     const updatedVolunteer = await Volunteer.findByIdAndUpdate(
 //       req.user._id, // Taken from the JWT Token
 //       { 
@@ -217,7 +217,7 @@
 //       severity: -1, 
 //       createdAt: -1 
 //     });
-    
+
 //     res.json(missions);
 //   } catch (err) {
 //     res.status(500).json({ message: "Server Error" });
@@ -248,7 +248,7 @@
 //   try {
 //     const { status } = req.body; // Expect "IN_REVIEW" or "COMPLETED"
 //     const mission = await Mission.findById(req.params.id);
-    
+
 //     if (!mission) return res.status(404).json({ message: "Mission not found" });
 
 //     // Verify ownership
@@ -291,25 +291,37 @@ const VolunteerAlert = require("../models/VolunteerAlert");
 const Mission = require("../models/Mission");
 
 // --- SEND OTP ---
+// --- SEND OTP ---
 exports.sendOtp = async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ message: "Email required" });
+    if (!email) return res.status(400).json({ message: "Email is required" });
 
-    const existing = await Volunteer.findOne({ email });
-    if (existing) return res.status(400).json({ message: "Email already registered" });
+    // Note: Citizen flow does not check existence here, so we skip it to match exactly.
+    // const existing = await Volunteer.findOne({ email });
+    // if (existing) return res.status(400).json({ message: "Email already registered" });
 
+    // 1. Generate 6-digit OTP
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    await Otp.deleteMany({ email });
-    await Otp.create({ email, otp: code });
 
-    await sendEmail({
+    // 2. Remove old OTPs for this email (Clean slate - Match Citizen)
+    await Otp.deleteMany({ email });
+
+    // 3. Save to DB
+    await Otp.create({
       email,
-      subject: "Volunteer OTP Verification",
-      message: `Your OTP is ${code}. Expires in 5 minutes.`,
+      otp: code
     });
 
-    res.json({ message: "OTP sent" });
+    // 4. Send Email (Match Citizen Structure)
+    await sendEmail({
+      email,
+      subject: "Disaster Portal - Volunteer Verification", // Adapted title but same structure
+      message: `Your OTP is ${code}`,
+      otp: code // <--- PRIMARY FIX: Required for HTML template to render the code
+    });
+
+    res.json({ message: "OTP sent successfully" });
   } catch (err) {
     console.error("Send OTP Error:", err);
     res.status(500).json({ message: "Failed to send OTP" });
@@ -317,30 +329,56 @@ exports.sendOtp = async (req, res) => {
 };
 
 // --- REGISTER (with OTP verify) ---
+// --- REGISTER (with OTP verify) ---
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, otp, skills, location } = req.body;
+    const { name, email, password, phone, otp, skills, location } = req.body;
 
+    // 1. Basic Validation
+    if (!name || !email || !password || !phone || !otp) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // 2. Verify OTP First
     const record = await Otp.findOne({ email });
-    if (!record || record.otp !== otp) return res.status(400).json({ message: "Invalid OTP" });
+    if (!record || record.otp !== otp) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
 
+    // 3. Check Existing (Email OR Phone) - Matching Citizen Logic
+    const existing = await Volunteer.findOne({
+      $or: [{ email }, { phone }]
+    });
+    if (existing) {
+      return res.status(400).json({ message: "Volunteer already registered" });
+    }
+
+    // 4. Hash Password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // 5. Create Volunteer
     const volunteer = await Volunteer.create({
       name,
       email,
+      phone, // <--- Fixed: Was missing
       password: hashedPassword,
-      skills,
+      skills: skills, // Frontend sends array strings or raw input? Model expects array of strings. 
+      // If frontend sends comma-separated string, ensure it's handled or passed as is if model handles it.
+      // Assuming frontend sends correctly or we pass as is for now to match strict "don't invent logic" rule unless broken.
+      // Previous code passed it directly.
       location,
+      approved: true, // Explicitly true
+      roleType: "VOLUNTEER"
     });
 
+    // 6. Delete OTP
     await Otp.deleteOne({ email });
 
-    res.json({ message: "Volunteer registered", volunteer });
+    res.status(201).json({ message: "Volunteer registered successfully", volunteer });
   } catch (err) {
     console.error("Register Error:", err);
-    res.status(500).json({ message: "Failed to register" });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 

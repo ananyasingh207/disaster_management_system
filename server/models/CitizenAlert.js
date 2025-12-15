@@ -27,6 +27,19 @@ const citizenAlertSchema = new mongoose.Schema(
 
     region: String,
 
+    // New field to store specific incident type (Flood, Fire, etc.)
+    // when 'type' is set to "BROADCAST"
+    category: {
+      type: String,
+      default: "GENERAL"
+    },
+
+    // To explicitly track target audience "ALL" vs "CITIZEN"
+    audience: {
+      type: String,
+      default: "ALL"
+    },
+
     sourceType: {
       type: String,
       default: "ADMIN",

@@ -4,103 +4,105 @@ import api from "../../api";
 import { normalizeAlert, formatDateOnly } from "../../utils/normalizeAdminData";
 
 export default function AdminIncidents() {
+  /* Removed filter state, hardcoded to CITIZEN defaults */
   const [alerts, setAlerts] = useState([]);
-  const [filter, setFilter] = useState("CITIZEN"); // Tabs: CITIZEN or VOLUNTEER
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchAlerts();
-  }, []);
+    fetchIncidents();
+  }, []); // Only run once on mount
 
-  const fetchAlerts = async () => {
+  const fetchIncidents = async () => {
+    setLoading(true);
+    setAlerts([]);
+
     try {
-      const res = await api.get("/admin/alerts");
-      // Normalize all alert data using shared helper
+      // STRICT: Always fetch CITIZEN incidents only
+      const queryType = "CITIZEN_INCIDENT";
+
+      const res = await api.get(`/admin/alerts?type=${queryType}`);
+
+      // Normalize data
       const normalized = (res.data || []).map(normalizeAlert);
       setAlerts(normalized);
     } catch (err) {
       console.error("Failed to load incidents", err);
-      // Set empty array on error to prevent crashes
       setAlerts([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const displayed = alerts.filter((a) =>
-    filter === "CITIZEN" ? a.typeTag === "INCIDENT" : a.typeTag === "REPORT"
-  );
-
   return (
-    <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-8">
+    <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 animate-fade-in-up">
       <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
         <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
         Live Incidents
       </h3>
 
-      {/* Tabs */}
-      <div className="flex gap-4 mb-6">
-        <button
-          onClick={() => setFilter("CITIZEN")}
-          className={`px-4 py-2 rounded-lg font-bold text-sm ${
-            filter === "CITIZEN"
-              ? "bg-amber-500 text-black"
-              : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-          }`}
-        >
-          Citizen Reports
-        </button>
-        <button
-          onClick={() => setFilter("VOLUNTEER")}
-          className={`px-4 py-2 rounded-lg font-bold text-sm ${
-            filter === "VOLUNTEER"
-              ? "bg-amber-500 text-black"
-              : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-          }`}
-        >
-          Volunteer Reports
-        </button>
-      </div>
+      {/* Tabs Removed - Enforcing Citizen View Only */}
 
-      <div className="grid grid-cols-3 gap-6">
-        {displayed.map((a) => (
-          <div
-            key={a._id}
-            className="bg-slate-800 rounded-xl p-5 border border-slate-700 hover:border-amber-500 transition-all group"
-          >
-            <div className="flex justify-between text-xs font-mono text-slate-500 mb-3">
-              <span className="uppercase">{a.type}</span>
-              <span
-                className={`font-bold ${
-                  a.severity === "HIGH" || a.severity === "CRITICAL"
-                    ? "text-red-500"
+      {loading ? (
+        <div className="py-20 text-center text-slate-500 animate-pulse font-mono">
+          Fetching live data stream...
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {alerts.length === 0 && (
+            <div className="col-span-full py-16 text-center border border-dashed border-slate-800 rounded-2xl text-slate-500">
+              No active citizen reports found.
+            </div>
+          )}
+
+          {alerts.map((a) => (
+            <div
+              key={a._id}
+              className="bg-slate-800 rounded-xl p-5 border border-slate-700 hover:border-slate-500 transition-all group flex flex-col h-full shadow-lg"
+            >
+              <div className="flex justify-between text-xs font-mono text-slate-500 mb-3">
+                <span className="uppercase tracking-wider">{a.type || "INCIDENT"}</span>
+                <span
+                  className={`font-bold px-2 py-0.5 rounded ${a.severity === "HIGH" || a.severity === "CRITICAL"
+                    ? "bg-red-500/10 text-red-500"
                     : a.severity === "MEDIUM"
-                    ? "text-amber-500"
-                    : "text-green-500"
-                }`}
-              >
-                {a.severity}
-              </span>
+                      ? "bg-amber-500/10 text-amber-500"
+                      : "bg-emerald-500/10 text-emerald-500"
+                    }`}
+                >
+                  {a.severity || "LOW"}
+                </span>
+              </div>
+
+              <h3 className="text-base font-bold text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-2">
+                {a.title || "Untitled Incident"}
+              </h3>
+
+              <p className="text-xs text-slate-400 line-clamp-3 mb-4 flex-grow">
+                {a.description || a.message || "No details provided..."}
+              </p>
+
+              <div className="flex justify-between items-end text-[10px] text-slate-600 font-mono mb-4 pt-3 border-t border-slate-700/50 mt-auto">
+                <div className="flex flex-col">
+                  {/* Source removed or minimized */}
+                  <span className="text-slate-500 mb-0.5">Reported By:</span>
+                  <span className="text-slate-400 font-bold max-w-[120px] truncate">{a.source || a.author || "Citizen"}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-slate-500 block mb-0.5">Time:</span>
+                  <span>{formatDateOnly(a.createdAt, "Just now")}</span>
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <Link to={`/admin/incidents/${a._id}`} className="mt-auto">
+                <button className="w-full bg-slate-900 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold py-3 rounded-lg transition-colors border border-slate-700 uppercase tracking-wide">
+                  Review Incident
+                </button>
+              </Link>
             </div>
-
-            <h3 className="text-base font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">
-              {a.title || "Untitled Incident"}
-            </h3>
-            <p className="text-xs text-slate-400 line-clamp-3 mb-4">{a.description || a.message}</p>
-
-            <div className="flex justify-between text-[10px] text-slate-600 font-mono mb-4">
-              <span className="flex items-center gap-1">
-                <span className="text-blue-400">Source:</span> {a.source || a.author || "Anonymous"}
-              </span>
-              <span>{formatDateOnly(a.createdAt, "Date unavailable")}</span>
-            </div>
-
-            {/* Open Case Button */}
-            <Link to={`/admin/incidents/${a._id}`}>
-              <button className="w-full bg-slate-800 hover:bg-amber-500 hover:text-black text-slate-300 text-xs font-bold py-2.5 rounded transition-colors border border-slate-700">
-                OPEN CASE →
-              </button>
-            </Link>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

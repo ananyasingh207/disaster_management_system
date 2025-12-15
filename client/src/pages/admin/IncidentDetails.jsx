@@ -497,107 +497,137 @@ export default function IncidentDetails() {
   };
 
   if (loading) return <div className="text-white p-10">Loading incident details...</div>;
-  
+
   if (!incident) return <div className="text-red-500 p-10">Incident not found.</div>;
 
   return (
-    <div className="grid grid-cols-2 gap-8 h-full">
+    <div className="grid grid-cols-2 gap-8 h-full animate-fade-in">
       {/* LEFT: Incident Information + Public Communication */}
       <div className="bg-slate-900/50 rounded-2xl p-8 border border-slate-800 space-y-6">
         <h3 className="text-xl font-bold text-white">Incident #{id.slice(-6)}</h3>
 
-        <div className="space-y-2">
-          <p className="text-sm text-slate-400">Title: <span className="text-white font-medium">{incident.title}</span></p>
-          <p className="text-sm text-slate-400">Type: <span className="text-white font-medium">{incident.type}</span></p>
-          <p className="text-sm text-slate-400">Severity: 
-            <span className={`font-bold ${
-              incident.severity === "HIGH" || incident.severity === "CRITICAL" ? "text-red-500" :
-              incident.severity === "MEDIUM" ? "text-amber-500" : "text-green-500"
-            }`}>
-              {incident.severity}
-            </span>
-          </p>
-          <p className="text-sm text-slate-400">Description: <span className="text-white font-medium">{incident.description}</span></p>
-          <p className="text-sm text-slate-400">Location: <span className="text-white font-medium">
-            {incident.location?.address || 
-             (incident.location?.lat !== undefined && incident.location?.lng !== undefined
-               ? `Lat: ${formatNumber(incident.location.lat, 6)}, Lng: ${formatNumber(incident.location.lng, 6)}`
-               : "Location unavailable")}
-          </span></p>
-          <p className="text-sm text-slate-400">Status: <span className="text-white font-medium">{incident.status}</span></p>
-          <p className="text-sm text-slate-400">Source: <span className="text-white font-medium">{incident.citizen?.name || "Anonymous"}</span></p>
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Title</p>
+              <p className="text-white font-medium">{incident.title}</p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Type</p>
+              <p className="text-white font-medium">{incident.type}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Severity</p>
+              <p className={`font-bold ${incident.severity === "HIGH" || incident.severity === "CRITICAL" ? "text-red-500" :
+                  incident.severity === "MEDIUM" ? "text-amber-500" : "text-emerald-500"
+                }`}>
+                {incident.severity}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Status</p>
+              <p className="text-white font-medium">{incident.status}</p>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Location</p>
+            <p className="text-slate-300 font-mono text-sm">
+              {incident.location?.address ||
+                (incident.location?.lat !== undefined && incident.location?.lng !== undefined
+                  ? `Lat: ${formatNumber(incident.location.lat, 6)}, Lng: ${formatNumber(incident.location.lng, 6)}`
+                  : "Location unavailable")}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Description</p>
+            <p className="text-slate-300 leading-relaxed text-sm">{incident.description}</p>
+          </div>
         </div>
 
         {/* Public Replies */}
-        <div className="space-y-4">
-          <h4 className="text-base font-bold text-white">Public Communication</h4>
-          {incident.adminReplies?.map((reply, idx) => (
-            <div key={idx} className="bg-slate-800 p-3 rounded-lg text-sm text-slate-300">
-              {reply.message || reply.message || "No message"} <span className="text-xs text-slate-500">({formatDate(reply.createdAt || reply.date, "Time unavailable")})</span>
-            </div>
-          ))}
+        <div className="space-y-4 pt-6 border-t border-slate-800/50">
+          <div className="flex justify-between items-center">
+            <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider">Reporter Update</h4>
+          </div>
+
+          <div className="space-y-3 max-h-48 overflow-y-auto">
+            {incident.adminReplies?.length === 0 && <p className="text-xs text-slate-600 italic">No updates sent yet.</p>}
+            {incident.adminReplies?.map((reply, idx) => (
+              <div key={idx} className="bg-slate-800/50 p-3 rounded-lg text-sm text-slate-300 border border-slate-700/50">
+                {reply.message || reply.message || "No message"} <span className="text-xs text-slate-500 block mt-1">({formatDate(reply.createdAt || reply.date, "Time unavailable")})</span>
+              </div>
+            ))}
+          </div>
+
           <div className="flex gap-2">
             <input
-              className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600"
-              placeholder="Send reply to reporter..."
+              className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600 focus:border-slate-600 transition-colors"
+              placeholder="Send update to reporter..."
               value={citizenMsg}
               onChange={(e) => setCitizenMsg(e.target.value)}
             />
             <button
               onClick={sendReply}
-              className="bg-blue-600 hover:bg-blue-500 text-white px-4 rounded-lg text-sm font-bold"
+              className="bg-slate-700 hover:bg-slate-600 text-white px-4 rounded-lg text-sm font-bold transition-colors"
             >
-              SEND
+              Send
             </button>
           </div>
         </div>
       </div>
 
       {/* RIGHT: Command Actions + Internal Logs */}
-      <div className="bg-slate-900/50 rounded-2xl p-8 border border-slate-800 space-y-6">
+      <div className="bg-slate-900/50 rounded-2xl p-8 border border-slate-800 space-y-6 flex flex-col">
         <h3 className="text-xl font-bold text-white">Command Actions</h3>
 
-        <div className="space-y-4">
-          <button
-            onClick={acknowledge}
-            className="w-full bg-amber-600 hover:bg-amber-500 text-black py-3 rounded-lg font-bold text-sm"
-          >
-            Acknowledge Incident
-          </button>
+        <div className="grid grid-cols-2 gap-4">
           <button
             onClick={deployMission}
-            className="w-full bg-red-600 hover:bg-red-500 text-white py-3 rounded-lg font-bold text-sm shadow-lg shadow-red-500/30"
+            className="w-full bg-slate-800 hover:bg-slate-700 text-white py-4 rounded-xl font-bold text-sm border border-slate-700 transition-all flex flex-col items-center gap-1 group"
           >
-            Deploy Rescue Team
+            <span className="text-lg group-hover:scale-110 transition-transform">🚨</span>
+            <span>Deploy Rescue Team</span>
           </button>
+
           <button
             onClick={resolve}
-            className="w-full bg-green-600 hover:bg-green-500 text-white py-3 rounded-lg font-bold text-sm"
+            className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white py-4 rounded-xl font-bold text-sm border border-slate-700 transition-all flex flex-col items-center gap-1"
           >
-            Resolve Incident
+            <span className="text-lg">✅</span>
+            <span>Resolve Incident</span>
           </button>
         </div>
 
         {/* Internal Notes */}
-        <div className="space-y-4">
-          <h4 className="text-base font-bold text-white">Internal Notes</h4>
-          {incident.adminNotes?.map((note, idx) => (
-            <div key={idx} className="bg-slate-800 p-3 rounded-lg text-sm text-slate-300">
-              {note.note || "No note"} <span className="text-xs text-slate-500">({formatDate(note.createdAt || note.date, "Time unavailable")})</span>
-            </div>
-          ))}
+        <div className="space-y-4 pt-6 mt-auto border-t border-slate-800/50 flex-grow flex flex-col">
+          <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider">Internal Notes</h4>
+
+          <div className="space-y-3 overflow-y-auto flex-grow h-48">
+            {incident.adminNotes?.length === 0 && <p className="text-xs text-slate-600 italic">No notes recorded.</p>}
+            {incident.adminNotes?.map((note, idx) => (
+              <div key={idx} className="bg-slate-800/30 p-3 rounded-lg text-sm text-slate-400 border border-slate-800">
+                <span className="text-amber-500/50 mr-2">#</span>{note.note || "No note"} <span className="text-xs text-slate-600 block mt-1">({formatDate(note.createdAt || note.date, "Time unavailable")})</span>
+              </div>
+            ))}
+          </div>
+
           <div className="flex gap-2">
             <input
-              className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600"
-              placeholder="Add classified note..."
+              className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600 focus:border-slate-600"
+              placeholder="Add internal note..."
               value={internalNote}
               onChange={(e) => setInternalNote(e.target.value)}
             />
             <button
               onClick={saveRecord}
-              className="bg-amber-600 hover:bg-amber-500 text-black px-4 rounded-lg text-sm font-bold"
+              className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 rounded-lg text-sm font-bold border border-slate-700"
             >
-              SAVE
+              Save
             </button>
           </div>
         </div>
