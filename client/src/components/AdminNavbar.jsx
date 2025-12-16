@@ -20,7 +20,7 @@ export default function AdminNavbar() {
   };
 
   return (
-    <aside className="h-screen w-72 bg-[#0b0f19] border-r border-slate-800 flex flex-col sticky top-0 z-50">
+    <aside className="h-screen w-72 bg-[#1a1e26] border-r border-slate-800 flex flex-col sticky top-0 z-50">
 
       {/* HEADER */}
       <div className="p-8 border-b border-slate-800/50">
@@ -56,6 +56,10 @@ export default function AdminNavbar() {
         {/* BROADCAST */}
         <NavLink to="/admin/broadcast" className={getLinkClass}>
           Alert Broadcasts
+        </NavLink>
+
+        <NavLink to="/" className={getLinkClass}>
+          Back to home
         </NavLink>
 
       </nav>

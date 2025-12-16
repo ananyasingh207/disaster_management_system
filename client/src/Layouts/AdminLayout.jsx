@@ -7,8 +7,8 @@ export default function AdminLayout() {
   return (
     <AdminErrorBoundary>
       {/* 'flex' makes items sit side-by-side (Left Sidebar | Right Content) */}
-      <div className="flex h-screen w-screen bg-[#0b0f19] overflow-hidden">
-        
+      <div className="flex h-screen w-screen bg-[#1d222c] overflow-hidden">
+
         {/* Sidebar Container (Fixed Width) */}
         <div className="flex-shrink-0">
           <AdminNavbar />

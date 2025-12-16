@@ -432,7 +432,7 @@ exports.getDashboardData = async (req, res) => {
     const activeIncidents = [];
 
     // 2. Ongoing Operations (Assigned to Me)
-    // STRICT RULE: assignedVolunteer === req.user._id AND status === "IN_PROGRESS"
+    // STRICT RULE: assignedVolunteer IS req.user._id AND status === "IN_PROGRESS"
     const assignedIncidents = await CitizenIncident.find({
       assignedVolunteer: req.user._id,
       status: "IN_PROGRESS"
@@ -513,16 +513,35 @@ exports.resolveIncident = async (req, res) => {
     const incident = await CitizenIncident.findById(req.params.id);
     if (!incident) return res.status(404).json({ message: "Incident not found" });
 
-    // Enforce Strict Transition: IN_PROGRESS -> COMPLETED
-    if (incident.status !== "IN_PROGRESS") {
-      return res.status(400).json({ message: "Incident must be IN_PROGRESS to resolve." });
+    const volunteerId = req.user._id;
+
+    // 1. Ownership Check
+    if (incident.assignedVolunteer?.toString() !== volunteerId.toString()) {
+      return res.status(403).json({ message: "You are not assigned to this incident." });
     }
 
-    // 1. Update Incident Status
+    // 2. Strict Status Check
+    if (incident.status !== "IN_PROGRESS") {
+      return res.status(400).json({
+        message: `Cannot resolve. Incident is ${incident.status} (Must be IN_PROGRESS)`
+      });
+    }
+
+    // 3. Mark Incident COMPLETED
     incident.status = "COMPLETED";
     await incident.save();
 
-    // NOTE: Volunteer status remains unchanged (per strict requirement)
+    // 4. Force Reset Volunteer to AVAILABLE
+    // Mandatory reset as single volunteer enforcement means they must be free now.
+    const volunteer = await Volunteer.findById(volunteerId);
+    if (!volunteer) {
+      return res.status(404).json({ message: "Volunteer profile not found." });
+    }
+
+    volunteer.status = "AVAILABLE";
+    await volunteer.save();
+
+    console.log(`Incident ${incident._id} Resolved. Volunteer ${volunteerId} is now AVAILABLE.`);
 
     res.json({ message: "Incident Resolved", incident });
   } catch (err) {

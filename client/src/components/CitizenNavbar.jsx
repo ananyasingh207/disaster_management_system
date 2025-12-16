@@ -21,7 +21,7 @@ export default function CitizenNavbar() {
   };
 
   return (
-    <aside className="h-screen w-72 bg-[#0f172a] border-r border-slate-700 flex flex-col sticky top-0 z-50">
+    <aside className="h-screen w-72 bg-[#1a1e26] border-r border-slate-700 flex flex-col sticky top-0 z-50">
 
       {/* HEADER */}
       <div className="p-8 border-b border-slate-700/50">
@@ -49,6 +49,9 @@ export default function CitizenNavbar() {
         </NavLink>
         <NavLink to="/citizen/relief" className={getLinkClass}>
           Shelter Operations
+        </NavLink>
+        <NavLink to="/" className={getLinkClass}>
+          Back to home
         </NavLink>
       </nav>
 

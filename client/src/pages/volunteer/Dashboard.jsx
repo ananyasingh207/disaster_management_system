@@ -17,7 +17,7 @@ export default function Dashboard() {
         setData({
           activeIncidents: res.data.activeIncidents || [],
           assignedIncidents: res.data.assignedIncidents || [],
-          completedIncidents: res.data.completedIncidents || []
+          completedIncidents: res.data.completedIncidents || [],
         });
       } catch (err) {
         console.error("Dashboard load failed:", err);
@@ -27,6 +27,8 @@ export default function Dashboard() {
     };
     load();
   }, []);
+
+
 
   if (loading) {
     return (
@@ -49,20 +51,15 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="text-right">
-          <span className="block text-2xl font-bold text-emerald-500">
-            {data.assignedIncidents.length}
-          </span>
-          <span className="text-xs text-slate-500 uppercase tracking-widest">
-            Active Operations
-          </span>
+          
         </div>
       </div>
 
       <div className="flex flex-col gap-12">
-        {/* SECTION 1: ONGOING OPERATIONS (Assigned) */}
+        {/* ONGOING OPERATIONS */}
         <section className="bg-slate-900/30 border border-slate-800/60 rounded-2xl p-8">
           <div className="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
-            <h3 className="text-lg font-bold text-slate-300 flex items-center gap-2 uppercase tracking-wider text-xs">
+            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
               Ongoing Operations
             </h3>
             <span className="text-xs text-slate-500 font-mono">
@@ -79,10 +76,13 @@ export default function Dashboard() {
               {data.assignedIncidents.map((c) => (
                 <div
                   key={c._id}
-                  className="bg-slate-800/20 border border-slate-700/50 p-5 rounded-xl hover:bg-slate-800/40 transition-all opacity-90 hover:opacity-100 group"
+                  className="bg-slate-800/20 border border-slate-700/50 p-5 rounded-xl
+                             hover:bg-slate-800/40 transition-all group flex flex-col"
                 >
+                  {/* TOP */}
                   <div className="flex justify-between items-start mb-3">
-                    <span className="text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide border text-blue-400 bg-blue-500/10 border-blue-500/20">
+                    <span className="text-[10px] font-bold px-2 py-1 rounded uppercase
+                      border text-blue-400 bg-blue-500/10 border-blue-500/20">
                       IN PROGRESS
                     </span>
                     <span className="text-[10px] font-mono text-slate-600">
@@ -90,21 +90,37 @@ export default function Dashboard() {
                     </span>
                   </div>
 
-                  <h5 className="font-bold text-slate-300 text-sm mb-1 truncate group-hover:text-white transition-colors">
+                  {/* TITLE */}
+                  <h5 className="font-bold text-slate-300 text-sm mb-1 truncate group-hover:text-white">
                     {c.title}
                   </h5>
 
+                  {/* DESCRIPTION */}
                   <p className="text-xs text-slate-500 mb-4 line-clamp-2">
                     {c.description}
                   </p>
 
-                  <div className="flex justify-between items-center mt-auto border-t border-slate-700/30 pt-3">
-                    <span className="text-[10px] text-slate-600 font-mono truncate max-w-[120px] flex items-center gap-1">
-                      Location: {c.location?.address || "Location unavailable"}
-                    </span>
+                  {/* LOCATION */}
+                  <div className="text-[10px] text-slate-500 font-mono mb-4 truncate">
+                    {c.location?.address || "Location unavailable"}
+                  </div>
+
+                  {/* ACTIONS */}
+                  <div className="mt-auto flex flex-col gap-2">
+
+
+                    {/* VIEW INCIDENT */}
                     <Link to={`/volunteer/incidents/${c._id}`}>
-                      <button className="text-[10px] font-bold text-slate-400 hover:text-white uppercase tracking-wider transition-colors">
-                        View Details →
+                      <button
+                        className="
+                          w-full py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider
+                          bg-slate-700/40 text-slate-200
+                          border border-slate-600/40
+                          hover:bg-slate-700/60 hover:text-white
+                          transition-all
+                        "
+                      >
+                        View Incident
                       </button>
                     </Link>
                   </div>
@@ -114,18 +130,18 @@ export default function Dashboard() {
           )}
         </section>
 
-        {/* SECTION 2: COMPLETED ASSIGNMENTS (History Tables) */}
+        {/* MISSION HISTORY */}
         <section className="bg-slate-900/30 border border-slate-800/60 rounded-2xl p-8">
           <div className="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
-            <h3 className="text-lg font-bold text-slate-300 flex items-center gap-2 uppercase tracking-wider text-xs">
+            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
               Mission History
             </h3>
             <span className="text-xs text-slate-500 font-mono">
-              {data.completedIncidents?.length || 0} COMPLETED
+              {data.completedIncidents.length} COMPLETED
             </span>
           </div>
 
-          {!data.completedIncidents || data.completedIncidents.length === 0 ? (
+          {data.completedIncidents.length === 0 ? (
             <div className="text-center py-8 text-slate-600 text-sm italic">
               No completed missions on record.
             </div>
@@ -144,13 +160,19 @@ export default function Dashboard() {
                 </thead>
                 <tbody className="text-sm text-slate-400">
                   {data.completedIncidents.map((inc) => (
-                    <tr key={inc._id} className="border-b border-slate-800/50 hover:bg-slate-800/20 transition-colors">
-                      <td className="py-3 px-4 font-mono text-xs">{inc._id.slice(-6).toUpperCase()}</td>
-                      <td className="py-3 px-4 font-medium text-slate-300">{inc.title}</td>
+                    <tr
+                      key={inc._id}
+                      className="border-b border-slate-800/50 hover:bg-slate-800/20"
+                    >
+                      <td className="py-3 px-4 font-mono text-xs">
+                        {inc._id.slice(-6).toUpperCase()}
+                      </td>
+                      <td className="py-3 px-4 font-medium text-slate-300">
+                        {inc.title}
+                      </td>
                       <td className="py-3 px-4">
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${inc.severity === "CRITICAL" || inc.severity === "HIGH" ? "text-red-400 border-red-500/20 bg-red-500/5" :
-                          "text-sky-400 border-sky-500/20 bg-sky-500/5"
-                          }`}>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded
+                          text-emerald-400 border border-emerald-500/20 bg-emerald-500/5">
                           {inc.severity || "NORMAL"}
                         </span>
                       </td>
@@ -161,7 +183,8 @@ export default function Dashboard() {
                         {new Date(inc.updatedAt).toLocaleDateString()}
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">
+                        <span className="text-[10px] font-bold text-emerald-500
+                          bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">
                           COMPLETED
                         </span>
                       </td>

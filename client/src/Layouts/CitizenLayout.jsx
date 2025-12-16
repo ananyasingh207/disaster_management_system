@@ -4,7 +4,7 @@ import Footer from "../components/Footer";
 
 export default function CitizenLayout() {
   return (
-    <div className="flex h-screen bg-[#0f172a] overflow-hidden">
+    <div className="flex h-screen bg-[#1d222c] overflow-hidden">
 
       {/* 1. FIXED SIDEBAR */}
       <div className="flex-shrink-0">

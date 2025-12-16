@@ -554,31 +554,47 @@ exports.addAdminRecord = async (req, res) => {
 exports.deployMission = async (req, res) => {
   try {
     console.log("Assigning Incident:", req.body);
-    // Support payload format
     const id = req.body.sourceId || req.body.id || req.body._id;
     const { volunteerId } = req.body;
 
     if (!volunteerId) {
-      return res.status(400).json({ message: "Volunteer ID is required for assignment." });
+      return res.status(400).json({ message: "Volunteer ID is required." });
     }
 
     // 1. Find Incident
     const incident = await CitizenIncident.findById(id);
     if (!incident) return res.status(404).json({ message: "Incident not found" });
 
-    // 2. Validate Status Check - Prevent double assignment
-    if (["IN_PROGRESS", "COMPLETED", "RESOLVED"].includes(incident.status)) {
+    // 2. Strict Status Check
+    // Can only assign if PENDING. 
+    // If it is already IN_PROGRESS or ACTIVE, that means someone else has it.
+    if (incident.status !== "PENDING") {
       return res.status(400).json({
-        message: `Cannot assign. Incident is already ${incident.status}`
+        message: `Cannot assign. Incident is ${incident.status} (Must be PENDING)`
       });
     }
 
-    // 3. Update Incident
-    incident.status = "IN_PROGRESS";
-    incident.assignedVolunteer = volunteerId;
+    // 3. Find Volunteer & Check Availability
+    const volunteer = await Volunteer.findById(volunteerId);
+    if (!volunteer) return res.status(404).json({ message: "Volunteer not found" });
 
+    // Volunteer must be AVAILABLE
+    if (volunteer.status !== "AVAILABLE") {
+      return res.status(400).json({
+        message: `Volunteer is currently ${volunteer.status}. Cannot assign.`
+      });
+    }
+
+    // 4. Assign Volunteer (Single Assignment)
+    incident.assignedVolunteer = volunteerId;
+    incident.status = "IN_PROGRESS";
     await incident.save();
-    console.log(`Incident Assigned to ${volunteerId} (IN_PROGRESS):`, id);
+
+    // 5. Update Volunteer Status
+    volunteer.status = "DEPLOYED";
+    await volunteer.save();
+
+    console.log(`Incident ${id} Assigned to ${volunteerId}`);
 
     res.json({ message: "Volunteer Assigned Successfully", incident });
   } catch (err) {
@@ -595,9 +611,24 @@ exports.resolveIncident = async (req, res) => {
     const incident = await CitizenIncident.findById(id);
     if (!incident) return res.status(404).json({ message: "Incident not found" });
 
-    // Admin sets it to COMPLETED (Final State per requirements)
+    // Prevent double resolution
+    if (["COMPLETED", "RESOLVED"].includes(incident.status)) {
+      return res.status(400).json({ message: "Incident is already resolved." });
+    }
+
+    // Admin sets it to COMPLETED (Final State)
     incident.status = "COMPLETED";
     await incident.save();
+
+    // Release Assigned Volunteer
+    if (incident.assignedVolunteer) {
+      const volunteer = await Volunteer.findById(incident.assignedVolunteer);
+      if (volunteer) {
+        volunteer.status = "AVAILABLE";
+        await volunteer.save();
+        console.log(`Admin resolved incident ${id}. Released volunteer ${volunteer._id}.`);
+      }
+    }
 
     res.json({ message: "Incident Resolved", incident });
   } catch (err) {

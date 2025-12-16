@@ -46,6 +46,25 @@ export default function IncidentDetails() {
     }
   };
 
+  const getDirections = () => {
+    if (!incident) return;
+    let url = "";
+
+    if (incident.location?.lat && incident.location?.lng) {
+      url = `https://www.google.com/maps/dir/?api=1&destination=${incident.location.lat},${incident.location.lng}`;
+    } else if (incident.location?.address) {
+      url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        incident.location.address
+      )}`;
+    } else if (typeof incident.location === 'string') {
+      url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(incident.location)}`;
+    }
+
+    if (url) {
+      window.open(url, "_blank");
+    }
+  };
+
   if (loading) return <div className="p-10 text-slate-500 font-mono animate-pulse">Loading tactical data...</div>;
   if (error || !incident) return <div className="p-10 text-red-500 font-bold">{error || "Incident not found."}</div>;
 
@@ -82,11 +101,29 @@ export default function IncidentDetails() {
           {incident.title}
         </h1>
 
-        <div className="flex items-center gap-2 text-sm text-slate-300 font-mono bg-slate-950/50 p-4 rounded-lg border border-slate-800 w-full md:w-fit relative z-10">
-          <span>Location: </span>
-          {incident.location?.address
-            ? incident.location.address
-            : (typeof incident.location === 'string' ? incident.location : 'Location unavailable')}
+        <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto mt-6">
+          <div className="flex-1 flex items-center gap-2 text-sm text-slate-300 font-mono bg-slate-950/50 p-4 rounded-lg border border-slate-800">
+            <span>Location: </span>
+            {incident.location?.address
+              ? incident.location.address
+              : (typeof incident.location === 'string' ? incident.location : 'Location unavailable')}
+          </div>
+
+          <button
+            onClick={getDirections}
+            className="
+              w-full md:w-auto px-6 py-3 rounded-lg font-semibold
+              flex items-center justify-center gap-2
+              border border-emerald-500/30
+              text-emerald-300
+              bg-emerald-500/10
+              hover:bg-emerald-500/20
+              hover:text-emerald-200
+              transition-all whitespace-nowrap
+            "
+          >
+            Get Directions →
+          </button>
         </div>
       </div>
 

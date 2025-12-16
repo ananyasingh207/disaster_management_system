@@ -109,7 +109,8 @@ export default function IncidentDetails() {
       loadData();
     } catch (err) {
       console.error("Assignment failed", err);
-      alert("Failed to assign volunteer.");
+      // Show Backend Error Message
+      alert(err.response?.data?.message || "Failed to assign volunteer.");
     } finally {
       setAssigning(false);
     }
@@ -145,22 +146,43 @@ export default function IncidentDetails() {
             </h3>
 
             <div className="bg-slate-950 rounded-lg border border-slate-800 h-64 overflow-y-auto mb-6 p-2 space-y-2">
-              {volunteers.map(v => (
-                <div
-                  key={v._id}
-                  onClick={() => setSelectedVolunteer(v)}
-                  className={`p-3 rounded border cursor-pointer flex justify-between items-center transition-all ${selectedVolunteer?._id === v._id
-                    ? "bg-blue-600/20 border-blue-500 text-white"
-                    : "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-600"
-                    }`}
-                >
-                  <div>
-                    <div className="font-bold text-sm">{v.name}</div>
-                    <div className="text-xs text-slate-500">{v.email}</div>
+              {volunteers.map(v => {
+                const isAvailable = v.status === "AVAILABLE";
+                const isByMe = selectedVolunteer?._id === v._id;
+
+                return (
+                  <div
+                    key={v._id}
+                    onClick={() => {
+                      if (isAvailable) setSelectedVolunteer(v);
+                    }}
+                    className={`p-3 rounded border flex justify-between items-center transition-all ${isByMe
+                      ? "bg-blue-600/20 border-blue-500 text-white"
+                      : isAvailable
+                        ? "bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-600 cursor-pointer"
+                        : "bg-slate-900/50 border-slate-800 text-slate-600 cursor-not-allowed opacity-60"
+                      }`}
+                  >
+                    <div>
+                      <div className="font-bold text-sm flex items-center gap-2">
+                        {v.name}
+                        {!isAvailable && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 bg-red-900/40 text-red-500 rounded border border-red-900/50">
+                            {v.status || "BUSY"}
+                          </span>
+                        )}
+                        {isAvailable && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 bg-emerald-900/40 text-emerald-500 rounded border border-emerald-900/50">
+                            READY
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-slate-500">{v.email}</div>
+                    </div>
+                    {isByMe && <span className="text-blue-400 font-bold text-xs">SELECTED</span>}
                   </div>
-                  {selectedVolunteer?._id === v._id && <span className="text-blue-400 font-bold text-xs">SELECTED</span>}
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="flex gap-3 justify-end">

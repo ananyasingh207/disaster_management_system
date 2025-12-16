@@ -172,6 +172,215 @@ export default function Home() {
 
       </main>
 
+      {/* SAFETY INTRO */}
+      <section className="relative bg-[#101118] py-20 px-8 text-center overflow-hidden">
+        <div className="absolute inset-0 opacity-15">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-radial from-red-900/20 to-transparent blur-3xl" />
+        </div>
+
+        <h2 className="relative text-3xl md:text-4xl lg:text-5xl font-extrabold mb-5 leading-tight">
+          Know What To Do In An{" "}
+          <span className="block md:inline text-red-500 text-4xl md:text-5xl lg:text-6xl drop-shadow-[0_0_12px_rgba(239,68,68,0.6)]">
+            Emergency
+          </span>
+        </h2>
+
+        <p className="relative text-slate-300 text-base md:text-lg max-w-2xl mx-auto opacity-90">
+          Simple safety measures can save lives before professional help arrives.
+        </p>
+      </section>
+
+      {/* DISASTER SAFETY CARDS */}
+      <section id="safety-guidelines" className="bg-[#151720] py-14 px-8">
+        <h3 className="text-2xl md:text-3xl font-bold text-center mb-14 text-white">
+          Disaster Safety Guidelines
+        </h3>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {/* FIRE */}
+          <div className="group relative overflow-hidden rounded-xl border border-white/10 bg-black/40 p-5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent" />
+            <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-orange-500 to-amber-400" />
+
+            <h4 className="text-lg font-bold mb-4 text-orange-400">Fire</h4>
+            <div className="text-sm text-slate-300 space-y-2 leading-relaxed">
+              <p>Stay low to avoid smoke</p>
+              <p>Use stairs, not elevators</p>
+              <p>Stop, Drop & Roll if clothes catch fire</p>
+            </div>
+          </div>
+
+          {/* FLOOD */}
+          <div className="group relative overflow-hidden rounded-xl border border-white/10 bg-black/40 p-5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent" />
+            <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-orange-500 to-amber-400" />
+
+            <h4 className="text-lg font-bold mb-4 text-orange-400">Flood</h4>
+            <div className="text-sm text-slate-300 space-y-2 leading-relaxed">
+              <p>Move to higher ground immediately</p>
+              <p>Avoid walking or driving through flood water</p>
+              <p>Switch off electricity and gas</p>
+            </div>
+          </div>
+
+          {/* EARTHQUAKE */}
+          <div className="group relative overflow-hidden rounded-xl border border-white/10 bg-black/40 p-5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent" />
+            <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-orange-500 to-amber-400" />
+
+            <h4 className="text-lg font-bold mb-4 text-orange-400">Earthquake</h4>
+            <div className="text-sm text-slate-300 space-y-2 leading-relaxed">
+              <p>Drop, Cover & Hold On</p>
+              <p>Stay away from windows and heavy objects</p>
+              <p>Do not rush outside during shaking</p>
+            </div>
+          </div>
+
+          {/* CYCLONE */}
+          <div className="group relative overflow-hidden rounded-xl border border-white/10 bg-black/40 p-5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent" />
+            <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-orange-500 to-amber-400" />
+
+            <h4 className="text-lg font-bold mb-4 text-orange-400">Cyclone</h4>
+            <div className="text-sm text-slate-300 space-y-2 leading-relaxed">
+              <p>Stay indoors away from windows</p>
+              <p>Secure loose outdoor items</p>
+              <p>Follow official alerts and warnings</p>
+            </div>
+          </div>
+
+          {/* LANDSLIDE */}
+          <div className="group relative overflow-hidden rounded-xl border border-white/10 bg-black/40 p-5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent" />
+            <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-orange-500 to-amber-400" />
+
+            <h4 className="text-lg font-bold mb-4 text-orange-400">Landslide</h4>
+            <div className="text-sm text-slate-300 space-y-2 leading-relaxed">
+              <p>Move away from slopes quickly</p>
+              <p>Watch for sudden water flow or debris</p>
+              <p>Evacuate early if warned</p>
+            </div>
+          </div>
+
+          {/* HEALTH */}
+          <div className="group relative overflow-hidden rounded-xl border border-white/10 bg-black/40 p-5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent" />
+            <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-orange-500 to-amber-400" />
+
+            <h4 className="text-lg font-bold mb-4 text-orange-400">Health Emergency</h4>
+            <div className="text-sm text-slate-300 space-y-2 leading-relaxed">
+              <p>Maintain personal hygiene</p>
+              <p>Avoid crowded areas if possible</p>
+              <p>Follow health advisories</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PREPAREDNESS CHECKLIST */}
+      <section className="bg-[#101118] py-20 px-8">
+        <h3 className="text-2xl md:text-3xl font-bold text-center mb-12 text-white">
+          Be Prepared Before{" "}
+          <span className="text-red-500 text-3xl md:text-4xl drop-shadow-[0_0_12px_rgba(239,68,68,0.6)]">
+            Disaster
+          </span>{" "}
+          Strikes
+        </h3>
+
+        <div className="max-w-2xl mx-auto grid gap-4">
+          {[
+            "Emergency contacts saved",
+            "First aid kit ready",
+            "Torch and spare batteries",
+            "Clean drinking water stored",
+            "Important documents secured"
+          ].map((item, i) => (
+            <div
+              key={i}
+              className={`flex items-center gap-4 rounded-lg p-4 transition-all duration-300 ${i % 2 === 0
+                  ? "bg-black/50 backdrop-blur-sm border border-white/20 hover:bg-black/70 hover:border-red-500/30"
+                  : "bg-black/30 backdrop-blur-sm border border-white/10 hover:bg-black/50 hover:border-red-500/20"
+                }`}
+            >
+              <div className="flex items-center justify-center w-7 h-7 rounded-full bg-red-500/20 border-2 border-red-500/50">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4 h-4 text-red-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={3}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+
+              <p className="text-sm md:text-base text-slate-200">{item}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* PLATFORM OVERVIEW - RescueOps Cards */}
+      <section className="bg-[#151720] py-20 px-8 text-center">
+        <h3 className="text-2xl md:text-3xl font-bold mb-12 text-white">
+          How RescueOps Helps
+        </h3>
+
+        <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {[
+            ["Report Incidents", "Citizens can report emergencies instantly."],
+            ["SOS Alerts", "Critical SOS requests reach authorities immediately."],
+            ["Volunteer Support", "Trained volunteers are deployed rapidly."],
+            ["Live Monitoring", "Incidents are tracked in real time."]
+          ].map(([title, desc], i) => (
+            <div
+              key={title}
+              className={`relative rounded-xl p-6 transition-all duration-400 hover:-translate-y-2 ${i % 2 === 0
+                  ? "bg-gradient-to-br from-black/50 to-black/30 backdrop-blur-sm border border-white/20 hover:border-red-500/30"
+                  : "bg-gradient-to-br from-black/40 to-black/20 backdrop-blur-sm border border-white/15 hover:border-red-500/25"
+                }`}
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent rounded-xl" />
+              <div className="relative">
+                <h4 className="text-lg font-bold mb-2 text-white">{title}</h4>
+                <p className="text-sm text-slate-300 leading-relaxed">{desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* EMERGENCY HELPLINES - MOVED AFTER RESCUEOPS */}
+      <section className="bg-[#101118] py-28 px-8">
+        <h3 className="text-2xl md:text-3xl font-bold text-center mb-12 text-white">
+          Emergency Helpline Numbers
+        </h3>
+
+        <div className="max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {[
+              ["Police", "100"],
+              ["Fire", "101"],
+              ["Ambulance", "108"],
+              ["Disaster Helpline", "112"]
+            ].map(([label, number], i) => (
+              <div
+                key={label}
+                className={`flex items-center justify-between rounded-lg px-6 py-4 transition-all duration-300 ${i % 2 === 0
+                    ? "bg-black/50 backdrop-blur-sm border border-white/20 hover:border-red-500/30"
+                    : "bg-black/30 backdrop-blur-sm border border-white/10 hover:border-red-500/20"
+                  }`}
+              >
+                <p className="text-slate-300 text-base">{label}</p>
+                <p className="text-3xl font-extrabold text-red-500">{number}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
       {/* REGISTER MODAL */}
       {showRegisterModal && (
         <div

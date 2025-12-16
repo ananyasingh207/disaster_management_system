@@ -144,6 +144,7 @@ import SOSbutton from "./components/SOSbutton";
 // General
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
+import Donate from "./components/Donate";
 
 export default function App() {
   return (
@@ -153,6 +154,7 @@ export default function App() {
         <Routes>
           {/* HOME PAGE */}
           <Route path="/" element={<Home />} />
+          <Route path="/donate" element={<Donate />} />
 
           {/* 🔹 Independent Auth Routes */}
           <Route path="/citizen/login" element={<CitizenLogin />} />
