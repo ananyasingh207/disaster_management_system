@@ -12,7 +12,7 @@ export default function VolunteerNavbar() {
     const base =
       "flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200";
     const active =
-      "bg-blue-500/10 text-blue-400 border-l-4 border-blue-500 shadow-lg shadow-blue-900/20";
+      "bg-red-600/10 text-red-500 border-l-4 border-red-500 shadow-lg shadow-red-900/20";
     const inactive =
       "text-slate-400 hover:bg-slate-800/50 hover:text-white border-l-4 border-transparent";
 
@@ -24,11 +24,14 @@ export default function VolunteerNavbar() {
 
       {/* HEADER */}
       <div className="p-8 border-b border-slate-700/50">
-        <h2 className="text-2xl font-black text-white tracking-tight">
-          VOLUNTEER<span className="text-blue-500">.OS</span>
-        </h2>
-        <p className="text-xs text-slate-400 mt-1 font-medium">
-          Disaster Response Unit
+        <div className="flex items-center gap-3">
+          <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_#ef4444]"></div>
+          <h2 className="text-2xl font-black text-white tracking-tighter">
+            RESCUE<span className="text-red-500">OPS</span>
+          </h2>
+        </div>
+        <p className="text-[10px] font-bold text-red-500/80 tracking-[0.25em] uppercase mt-2">
+          VOLUNTEER OF DISASTER RESPONSE FORCE
         </p>
       </div>
 
@@ -44,19 +47,18 @@ export default function VolunteerNavbar() {
           Broadcasts
         </NavLink>
         <NavLink to="/volunteer/profile" className={getLinkClass}>
-          My Profile
+          Profile
         </NavLink>
       </nav>
 
-      {/* FOOTER ACTIONS */}
-      <div className="p-4 border-t border-slate-800">
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all text-sm font-medium"
-        >
-          Sign Out
-        </button>
-      </div>
+      {/* LOGOUT */}
+      <button
+        onClick={handleLogout}
+        className="m-4 px-4 py-3 bg-red-600/90 text-white rounded-xl font-bold 
+                   hover:bg-red-500 transition-all text-center shadow-lg shadow-red-900/30"
+      >
+        Logout
+      </button>
 
     </aside>
   );

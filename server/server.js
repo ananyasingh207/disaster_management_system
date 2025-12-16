@@ -108,7 +108,7 @@ app.use(morgan("dev"));
 // ---------------- CITIZEN ROUTES ----------------
 app.use("/api/citizen/auth", citizenAuthRoutes); // Public: register, login
 app.use("/api/citizen/incidents", protect, protectCitizen, citizenIncidentRoutes);
-app.use("/api/citizen/alerts", protect, protectCitizen, citizenAlertRoutes);
+app.use("/api/citizen/alerts", protect, citizenAlertRoutes);
 app.use("/api/citizen/otp", citizenOtpRoutes); // Public: send, verify
 
 // ---------------- VOLUNTEER ROUTES --------------

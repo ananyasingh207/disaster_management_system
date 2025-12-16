@@ -17,6 +17,8 @@ export default function Profile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Logic note: name, phone, status come from form state which is initialized from backend data
+      // Since inputs for them are removed, they remain unchanged (Read-Only effect)
       const res = await api.put("/volunteer/me", { ...form, skills: form.skills.split(",").map(s => s.trim()) });
       setVolunteer(res.data);
       setIsEditing(false);
@@ -24,35 +26,35 @@ export default function Profile() {
     } catch { setMsg("Update Failed"); }
   };
 
-  if (!volunteer) return <div className="p-10 text-white animate-pulse">LOADING DOSSIER...</div>;
+  if (!volunteer) return <div className="p-10 text-white animate-pulse">LOADING...</div>;
 
   const getStatusColor = (s) => s === "AVAILABLE" ? "text-emerald-400 border-emerald-500/50 bg-emerald-500/10" : s === "OFF_DUTY" ? "text-slate-400 border-slate-500/50 bg-slate-500/10" : "text-amber-400 border-amber-500/50 bg-amber-500/10";
 
   return (
     <div className="max-w-5xl mx-auto pb-12 animate-fade-in-up">
       <div className="mb-8 border-b border-slate-800 pb-6">
-        <h1 className="text-4xl font-black text-white tracking-tight mb-2">Operative Profile</h1>
+        <h1 className="text-4xl font-black text-white tracking-tight mb-2">Profile</h1>
         <p className="text-slate-400 font-medium">Service record and status configuration.</p>
       </div>
 
       {msg && <div className="p-4 mb-6 bg-emerald-500/10 border border-emerald-500/50 text-emerald-400 rounded-lg text-sm font-bold text-center">{msg}</div>}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        
+
         {/* CARD 1: IDENTITY */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center h-fit shadow-xl">
-          <div className="w-24 h-24 mx-auto bg-gradient-to-br from-blue-600 to-blue-500 rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-lg shadow-blue-500/30 mb-6">
+          <div className="w-24 h-24 mx-auto bg-gradient-to-br from-red-600 to-red-500 rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-lg shadow-red-500/30 mb-6">
             {volunteer.name.charAt(0)}
           </div>
           <h2 className="text-2xl font-bold text-white mb-1">{volunteer.name}</h2>
-          <p className="text-blue-400 text-sm font-medium mb-6">{volunteer.email}</p>
+          <p className="text-red-400 text-sm font-medium mb-6">{volunteer.email}</p>
 
           <div className={`py-3 px-4 rounded-xl border ${getStatusColor(volunteer.status)} flex items-center justify-center gap-3 mb-6`}>
             <span className={`w-2 h-2 rounded-full ${volunteer.status === 'AVAILABLE' ? 'bg-emerald-400' : 'bg-slate-400'}`}></span>
             <span className="font-bold text-sm tracking-wider">{volunteer.status.replace("_", " ")}</span>
           </div>
 
-          {!isEditing && <button onClick={() => setIsEditing(true)} className="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-lg border border-slate-700 transition-colors text-sm">EDIT DOSSIER</button>}
+          {!isEditing && <button onClick={() => setIsEditing(true)} className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-lg border border-red-500 transition-colors text-sm shadow-lg shadow-red-600/20">EDIT SKILLS</button>}
         </div>
 
         {/* CARD 2: DETAILS */}
@@ -64,28 +66,28 @@ export default function Profile() {
 
           {isEditing ? (
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-xs font-bold text-slate-500 uppercase mb-2">Name</label><input name="name" value={form.name} onChange={(e) => setForm({...form, [e.target.name]: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm focus:border-blue-500 outline-none" /></div>
-                <div><label className="block text-xs font-bold text-slate-500 uppercase mb-2">Phone</label><input name="phone" value={form.phone} onChange={(e) => setForm({...form, [e.target.name]: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm focus:border-blue-500 outline-none" /></div>
+
+              {/* Read Only Infos Displayed in Edit Mode for Context */}
+              <div className="grid grid-cols-2 gap-4 opacity-50 pointer-events-none select-none">
+                <div><label className="block text-xs font-bold text-slate-500 uppercase mb-2">Name</label><div className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-400 text-sm">{form.name}</div></div>
+                <div><label className="block text-xs font-bold text-slate-500 uppercase mb-2">Phone</label><div className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-400 text-sm">{form.phone}</div></div>
               </div>
-              <div><label className="block text-xs font-bold text-slate-500 uppercase mb-2">Skills (Comma Separated)</label><input name="skills" value={form.skills} onChange={(e) => setForm({...form, [e.target.name]: e.target.value})} className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm focus:border-blue-500 outline-none" /></div>
+
               <div>
-                <label className="block text-xs font-bold text-amber-500 uppercase mb-2">Deployment Status</label>
-                <select name="status" value={form.status} onChange={(e) => setForm({...form, [e.target.name]: e.target.value})} className="w-full bg-slate-950 border border-amber-500/50 text-white text-sm rounded-lg px-4 py-3 outline-none focus:border-amber-500">
-                  <option value="AVAILABLE">🟢 Available for Duty</option>
-                  <option value="OFF_DUTY">⚪ Off Duty / Resting</option>
-                  <option value="BUSY">🟠 Busy / Self-Deployed</option>
-                </select>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Skills (Comma Separated)</label>
+                <input name="skills" value={form.skills} onChange={(e) => setForm({ ...form, [e.target.name]: e.target.value })} className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm focus:border-red-500 outline-none" />
+                <p className="text-[10px] text-slate-400 mt-2">You can update your skills.</p>
               </div>
-              <button className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition-colors shadow-lg shadow-blue-600/20">SAVE CHANGES</button>
+
+              <button className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-lg transition-colors shadow-lg shadow-red-600/20">SAVE CHANGES</button>
             </form>
           ) : (
             <div className="space-y-6">
               <div><label className="block text-xs font-bold text-slate-500 uppercase mb-1">Contact</label><div className="text-xl text-white font-mono">{volunteer.phone}</div></div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-3">Capabilities</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-3">Skills</label>
                 <div className="flex flex-wrap gap-2">
-                  {volunteer.skills?.map((s, i) => <span key={i} className="px-3 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-xs font-bold uppercase tracking-wider">{s}</span>)}
+                  {volunteer.skills?.map((s, i) => <span key={i} className="px-3 py-1 bg-red-500/10 text-red-400 border border-red-500/20 rounded-full text-xs font-bold uppercase tracking-wider">{s}</span>)}
                 </div>
               </div>
               <div className="pt-6 mt-4 border-t border-slate-800"><p className="text-xs text-slate-600 font-mono">OPERATIVE ID: {volunteer._id}</p></div>
