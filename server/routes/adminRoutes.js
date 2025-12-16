@@ -77,7 +77,10 @@ const {
   sendCitizenReply,
   addAdminRecord,
   getReliefRequests,
-  finalizeMission
+  finalizeMission,
+  updateAlertStatus,
+  getCitizens,
+  updateVolunteerStatus
 } = require("../controllers/adminController");
 
 const { protect, protectAdmin } = require("../middleware/auth");
@@ -102,6 +105,11 @@ router.post("/incidents/record", addAdminRecord);
 router.get("/alerts", getAlerts);
 router.post("/alerts/citizen", createCitizenAlert);
 router.post("/alerts/volunteer", createVolunteerAlert);
+router.put("/alerts/:id/status", updateAlertStatus);
+
+// User Management
+router.get("/citizens", getCitizens); // NEW
+router.put("/volunteers/:id/status", updateVolunteerStatus); // NEW
 
 // Teams & Missions
 router.get("/teams", getTeams);

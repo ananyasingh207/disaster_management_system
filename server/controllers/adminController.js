@@ -659,3 +659,56 @@ exports.getReliefRequests = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+// --- ALERT OPERATIONS ---
+exports.updateAlertStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body; // Expect "ACTIVE" or "EXPIRED"
+
+    const alert = await CitizenAlert.findById(id);
+    if (!alert) return res.status(404).json({ message: "Alert not found" });
+
+    alert.status = status;
+    await alert.save();
+
+    res.json(alert);
+  } catch (err) {
+    console.error("Alert Update Error:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// --- USER MANAGEMENT ---
+exports.getCitizens = async (req, res) => {
+  try {
+    const citizens = await Citizen.find().select("-password");
+    res.json(citizens);
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+exports.updateVolunteerStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { approved } = req.body;
+
+    if (typeof approved !== "boolean") {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const volunteer = await Volunteer.findByIdAndUpdate(
+      id,
+      { approved },
+      { new: true, runValidators: true }
+    );
+
+    if (!volunteer) return res.status(404).json({ message: "Volunteer not found" });
+
+    res.json({ success: true, volunteer });
+  } catch (err) {
+    console.error("Volunteer Update Error:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
