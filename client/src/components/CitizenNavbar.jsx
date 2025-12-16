@@ -1,7 +1,7 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function CitizenNavbar() {
-  const location = useLocation();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -9,78 +9,63 @@ export default function CitizenNavbar() {
     navigate("/");
   };
 
-  const isActive = (path) => location.pathname.includes(path);
+  const getLinkClass = ({ isActive }) => {
+    const base =
+      "flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200";
+    const active =
+      "bg-red-600/10 text-red-500 border-l-4 border-red-500 shadow-lg shadow-red-900/20";
+    const inactive =
+      "text-slate-400 hover:bg-slate-800/50 hover:text-white border-l-4 border-transparent";
+
+    return isActive ? `${base} ${active}` : `${base} ${inactive}`;
+  };
 
   return (
-    <nav className="bg-[#1e293b] border-b border-slate-700 w-full sticky top-0 z-50 shadow-xl">
-      <div className="container mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
+    <aside className="h-screen w-72 bg-[#0f172a] border-r border-slate-700 flex flex-col sticky top-0 z-50">
 
-        {/* LEFT: LOGO */}
+      {/* HEADER */}
+      <div className="p-8 border-b border-slate-700/50">
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse shadow-[0_0_15px_#ef4444]"></div>
-          <h1 className="text-xl md:text-2xl font-black text-white tracking-widest uppercase group-hover:text-red-100 transition-colors">
-            DISASTER<span className="text-red-500">PORTAL</span>
+          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_#ef4444]"></div>
+          <h1 className="text-xl font-black text-white tracking-widest uppercase group-hover:text-red-100 transition-colors">
+            RESCUE<span className="text-red-500">OPS</span>
           </h1>
         </Link>
+        <p className="text-[10px] font-bold text-red-500/80 tracking-[0.25em] uppercase mt-2">
+          CITIZEN EMERGENCY PORTAL
+        </p>
+      </div>
 
-        {/* MIDDLE: NAVIGATION LINKS */}
-        <div className="flex items-center gap-2 md:gap-6 flex-wrap">
+      {/* NAVIGATION */}
+      <nav className="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-2">
+        <NavLink to="/citizen/report" className={getLinkClass}>
+          Report Incident
+        </NavLink>
+        <NavLink to="/citizen/incidents" className={getLinkClass}>
+          My Reports
+        </NavLink>
+        <NavLink to="/citizen/alerts" className={getLinkClass}>
+          Alerts
+        </NavLink>
+        <NavLink to="/citizen/relief" className={getLinkClass}>
+          Shelter Operations
+        </NavLink>
+      </nav>
 
-          <Link
-            to="/citizen/incidents"
-            className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-              isActive("/incidents")
-                ? "text-white bg-slate-700/50"
-                : "text-slate-400 hover:text-white hover:bg-slate-800"
-            }`}
-          >
-            My Reports
-          </Link>
+      {/* FOOTER ACTIONS */}
+      <div className="p-4 border-t border-slate-700/50 flex flex-col gap-3">
+        {/* REPORT INCIDENT CTA */}
 
-          <Link
-            to="/citizen/relief"
-            className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-              isActive("/relief")
-                ? "text-white bg-slate-700/50"
-                : "text-slate-400 hover:text-white"
-            }`}
-          >
-            Shelter & Relief
-          </Link>
-
-          <Link
-            to="/citizen/alerts"
-            className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-              isActive("/alerts")
-                ? "text-white bg-slate-700/50"
-                : "text-slate-400 hover:text-white hover:bg-slate-800"
-            }`}
-          >
-            Alerts
-          </Link>
-
-          {/* REPORT INCIDENT */}
-          <Link to="/citizen/report">
-            <button className="bg-gradient-to-r from-red-600 to-red-500 
-                               hover:from-red-500 hover:to-red-400 
-                               text-white px-4 py-2 rounded-lg font-bold text-xs 
-                               shadow-[0_4px_14px_rgba(239,68,68,0.4)]
-                               transition-all transform hover:scale-105 active:scale-95 ml-2">
-              REPORT INCIDENT
-            </button>
-          </Link>
-
-        </div>
-
-        {/* RIGHT: LOGOUT BUTTON */}
+        {/* LOGOUT */}
         <button
           onClick={handleLogout}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg font-bold text-sm hover:bg-red-500 transition-all"
+          className="m-4 px-4 py-3 bg-red-600/90 text-white rounded-xl font-bold 
+                    hover:bg-red-500 transition-all text-center shadow-lg shadow-red-900/30"
         >
           Logout
         </button>
-
       </div>
-    </nav>
+
+    </aside>
   );
 }

@@ -54,8 +54,11 @@ export default function CitizenIncidents() {
             {/* Footer */}
             <div className="pt-4 border-t border-slate-800 flex justify-between items-center">
               <span className="text-xs text-slate-500 font-mono flex items-center gap-1">
-                Location: {inc.address}
+              Location: {inc.location && inc.location.address
+                ? inc.location.address
+                : "Location unavailable"}
               </span>
+
               <span className={`text-xs font-bold px-2 py-1 rounded uppercase ${inc.status === 'RESOLVED' ? 'bg-emerald-500/10 text-emerald-500' :
                   inc.status === 'IN_PROGRESS' ? 'bg-blue-500/10 text-blue-500' :
                     'bg-yellow-500/10 text-yellow-500'

@@ -31,13 +31,11 @@ export default function AdminSOS() {
 
   // ---------------- FILTERED LISTS ----------------
   const pendingSOS = sosList.filter((s) => s.status === "PENDING");
-
   const resolvedSOS = sosList.filter(
     (s) => s.status === "COMPLETED" || s.status === "FALSE_ALARM"
   );
 
-  const visibleSOS =
-    activeTab === "PENDING" ? pendingSOS : resolvedSOS;
+  const visibleSOS = activeTab === "PENDING" ? pendingSOS : resolvedSOS;
 
   // ---------------- UPDATE STATUS ----------------
   const updateStatus = async (newStatus) => {
@@ -46,8 +44,8 @@ export default function AdminSOS() {
         newStatus === "COMPLETED"
           ? "ACKNOWLEDGED"
           : newStatus === "FALSE_ALARM"
-            ? "CONVERTED"
-            : "PENDING";
+          ? "CONVERTED"
+          : "PENDING";
 
       const res = await api.put(
         `/sos/${selectedSOS._id}/status`,
@@ -67,8 +65,8 @@ export default function AdminSOS() {
     }
   };
 
-  // ---------------- COPY COORDINATES ----------------
-  const copyCoordinates = () => {
+  // ---------------- GET DIRECTIONS ----------------
+  const getDirections = () => {
     const { latitude, longitude } = selectedSOS;
 
     if (
@@ -81,10 +79,8 @@ export default function AdminSOS() {
       return;
     }
 
-    navigator.clipboard.writeText(
-      `${formatNumber(latitude, 6)}, ${formatNumber(longitude, 6)}`
-    );
-    alert("Coordinates copied!");
+    const url = `https://www.google.com/maps?q=${latitude},${longitude}`;
+    window.open(url, "_blank");
   };
 
   // ---------------- UI ----------------
@@ -94,7 +90,7 @@ export default function AdminSOS() {
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-white flex items-center gap-3">
           SOS Control Panel
-          <span className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+          <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span>
         </h2>
       </div>
 
@@ -102,39 +98,38 @@ export default function AdminSOS() {
       <div className="flex gap-4 mb-6">
         <button
           onClick={() => setActiveTab("PENDING")}
-          className={`px-6 py-3 rounded-xl font-bold transition ${activeTab === "PENDING"
-            ? "bg-red-600 text-white"
-            : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+          className={`px-6 py-3 rounded-xl font-semibold transition
+            ${
+              activeTab === "PENDING"
+                ? "bg-red-600/80 text-white"
+                : "bg-slate-800 text-slate-400 hover:bg-slate-700"
             }`}
         >
-          <span>🔴</span> Pending SOS ({pendingSOS.length})
+          Pending SOS ({pendingSOS.length})
         </button>
 
         <button
           onClick={() => setActiveTab("RESOLVED")}
-          className={`px-6 py-3 rounded-xl font-bold transition ${activeTab === "RESOLVED"
-            ? "bg-emerald-600 text-white"
-            : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+          className={`px-6 py-3 rounded-xl font-semibold transition
+            ${
+              activeTab === "RESOLVED"
+                ? "bg-slate-700 text-white"
+                : "bg-slate-800 text-slate-400 hover:bg-slate-700"
             }`}
         >
           Completed / False ({resolvedSOS.length})
         </button>
       </div>
 
-      {/* LIST CONTAINER */}
+      {/* LIST */}
       <div className="bg-slate-900/50 rounded-2xl border border-slate-800 overflow-hidden">
         <div className="max-h-[calc(100vh-280px)] overflow-y-auto p-6 space-y-4">
           {visibleSOS.length === 0 ? (
             <div className="text-center py-20 text-slate-500">
-              <p className="text-2xl mb-2">
-                {activeTab === "PENDING"
-                  ? "All Clear"
-                  : "No History Yet"}
-              </p>
-              <p>
+              <p className="text-xl">
                 {activeTab === "PENDING"
                   ? "No active SOS alerts"
-                  : "Resolved alerts will appear here"}
+                  : "No resolved alerts yet"}
               </p>
             </div>
           ) : (
@@ -152,12 +147,12 @@ export default function AdminSOS() {
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <p className="text-xl font-mono text-white">
+                      <p className="text-lg font-mono text-white">
                         {hasCoords
                           ? `${formatNumber(
-                            sos.latitude,
-                            6
-                          )}, ${formatNumber(sos.longitude, 6)}`
+                              sos.latitude,
+                              6
+                            )}, ${formatNumber(sos.longitude, 6)}`
                           : "Location unavailable"}
                       </p>
 
@@ -171,11 +166,13 @@ export default function AdminSOS() {
                     </div>
 
                     <span
-                      className={`px-4 py-2 rounded-full text-sm font-bold text-white ${sos.status === "PENDING"
-                        ? "bg-red-600 animate-pulse"
-                        : sos.status === "COMPLETED"
-                          ? "bg-emerald-600"
-                          : "bg-slate-600"
+                      className={`px-4 py-1.5 rounded-full text-xs font-semibold
+                        ${
+                          sos.status === "PENDING"
+                            ? "bg-red-600/70 text-white"
+                            : sos.status === "COMPLETED"
+                            ? "bg-emerald-600/60 text-white"
+                            : "bg-slate-600 text-white"
                         }`}
                     >
                       {sos.status}
@@ -185,9 +182,11 @@ export default function AdminSOS() {
                   {sos.status === "PENDING" ? (
                     <button
                       onClick={() => setSelectedSOS(sos)}
-                      className="w-full mt-4 bg-red-600 hover:bg-red-500 text-white py-4 rounded-lg font-bold"
+                      className="w-full mt-4 py-3 rounded-lg font-semibold
+                                 bg-red-600/80 hover:bg-red-600
+                                 text-white transition"
                     >
-                      ACKNOWLEDGE SOS
+                      Acknowledge SOS
                     </button>
                   ) : (
                     <div className="text-center text-slate-500 mt-4">
@@ -208,19 +207,19 @@ export default function AdminSOS() {
           onClick={() => setSelectedSOS(null)}
         >
           <div
-            className="bg-slate-900 rounded-2xl p-10 w-full max-w-lg"
+            className="bg-slate-900 rounded-2xl p-8 w-full max-w-lg"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-2xl font-bold text-white mb-6">
               SOS Acknowledgement
             </h3>
 
-            <div className="bg-black/40 rounded-xl p-5 mb-6 font-mono text-lg text-center">
+            <div className="bg-black/40 rounded-xl p-4 mb-4 font-mono text-center text-white">
               {selectedSOS.latitude && selectedSOS.longitude
                 ? `${formatNumber(
-                  selectedSOS.latitude,
-                  6
-                )}, ${formatNumber(selectedSOS.longitude, 6)}`
+                    selectedSOS.latitude,
+                    6
+                  )}, ${formatNumber(selectedSOS.longitude, 6)}`
                 : "Location unavailable"}
             </div>
 
@@ -232,24 +231,39 @@ export default function AdminSOS() {
               )}
             </p>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               <button
-                onClick={copyCoordinates}
-                className="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold"
+                onClick={getDirections}
+                className="
+                  w-full py-3 rounded-lg font-semibold
+                  flex items-center justify-center gap-2
+                  border border-emerald-500/30
+                  text-emerald-300
+                  bg-emerald-500/10
+                  hover:bg-emerald-500/20
+                  hover:text-emerald-200
+                  transition-all
+                "
               >
-                Copy Coordinates
+                Get Directions
+                <span className="text-sm opacity-70">→</span>
               </button>
+
 
               <button
                 onClick={() => updateStatus("COMPLETED")}
-                className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-bold"
+                className="w-full py-3 rounded-lg font-semibold
+                           bg-emerald-600/80 hover:bg-emerald-600
+                           text-white transition"
               >
                 Mark as Resolved
               </button>
 
               <button
                 onClick={() => updateStatus("FALSE_ALARM")}
-                className="w-full py-4 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold"
+                className="w-full py-3 rounded-lg font-semibold
+                           bg-slate-800 hover:bg-slate-700
+                           text-slate-300 transition"
               >
                 Mark as False Alarm
               </button>
@@ -257,7 +271,7 @@ export default function AdminSOS() {
 
             <button
               onClick={() => setSelectedSOS(null)}
-              className="mt-6 text-sm text-slate-400 hover:text-white w-full"
+              className="mt-6 w-full text-sm text-slate-400 hover:text-white"
             >
               Cancel
             </button>

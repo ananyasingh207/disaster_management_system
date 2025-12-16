@@ -100,7 +100,7 @@ export default function VolunteerLogin() {
             className="w-full py-4 bg-red-600 hover:bg-red-500 text-white font-bold text-sm tracking-wider uppercase 
                        rounded-lg shadow-lg shadow-red-700/20 transition-all transform hover:translate-y-[-1px]"
           >
-            Login to Volunteer Panel
+            Login
           </button>
         </form>
 

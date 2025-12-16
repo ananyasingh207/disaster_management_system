@@ -42,7 +42,7 @@ export default function CitizenLogin() {
             Welcome Back
           </h1>
           <p className="text-slate-400 text-sm font-medium">
-            Citizen Emergency Access Portal
+            Citizen Emergency Portal
           </p>
         </div>
 
@@ -96,7 +96,7 @@ export default function CitizenLogin() {
           <button className="w-full py-3.5 bg-red-600 hover:bg-red-500 text-white font-bold 
                              rounded-lg shadow-lg shadow-red-700/20 
                              transition-all transform hover:scale-[1.01] active:scale-95">
-            Login to Citizen Panel
+            Login
           </button>
         </form>
 

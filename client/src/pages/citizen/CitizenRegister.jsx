@@ -59,7 +59,7 @@ export default function CitizenRegister() {
             Join the Network
           </h1>
           <p className="text-slate-400 text-sm">
-            Citizen Reporting Registration
+            Citizen Registration
           </p>
         </div>
 

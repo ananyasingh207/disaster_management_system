@@ -1,21 +1,24 @@
 import { Outlet } from "react-router-dom";
-// 👇 You were missing this import line!
-import CitizenNavbar from "../components/CitizenNavbar"; 
+import CitizenNavbar from "../components/CitizenNavbar";
 import Footer from "../components/Footer";
 
 export default function CitizenLayout() {
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white flex flex-col">
-      {/* Navbar at the top */}
-      <CitizenNavbar />
-      
-      {/* Main Content Area */}
-      <main className="container mx-auto p-6 flex-1">
-        <Outlet />
-      </main>
+    <div className="flex h-screen bg-[#0f172a] overflow-hidden">
 
-      {/* Footer at the bottom */}
-      <Footer />
+      {/* 1. FIXED SIDEBAR */}
+      <div className="flex-shrink-0">
+        <CitizenNavbar />
+      </div>
+
+      {/* 2. SCROLLABLE MAIN AREA */}
+      <div className="flex-1 flex flex-col h-full overflow-y-auto relative">
+        <main className="flex-1 p-8 pb-20">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
+
     </div>
   );
 }

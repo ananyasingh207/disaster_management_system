@@ -44,7 +44,7 @@ export default function VolunteerNavbar() {
           Training & Readiness
         </NavLink>
         <NavLink to="/volunteer/broadcasts" className={getLinkClass}>
-          Broadcasts
+          Alerts
         </NavLink>
         <NavLink to="/volunteer/profile" className={getLinkClass}>
           Profile
