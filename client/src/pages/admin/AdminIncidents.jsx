@@ -4,9 +4,9 @@ import api from "../../api";
 import { normalizeAlert, formatDateOnly } from "../../utils/normalizeAdminData";
 
 export default function AdminIncidents() {
-  /* Removed filter state, hardcoded to CITIZEN defaults */
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("live"); // 'live' | 'history'
 
   useEffect(() => {
     fetchIncidents();
@@ -33,14 +33,47 @@ export default function AdminIncidents() {
     }
   };
 
+  // Filter alerts based on active tab
+  const filteredAlerts = alerts.filter((a) => {
+    const isCompleted = a.status === "COMPLETED";
+    return activeTab === "history" ? isCompleted : !isCompleted;
+  });
+
   return (
     <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 animate-fade-in-up">
-      <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-        <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-        Live Incidents
-      </h3>
+      {/* Tab Interface */}
+      <div className="flex gap-4 mb-6 border-b border-slate-800 pb-1">
+        <button
+          onClick={() => setActiveTab("live")}
+          className={`pb-4 px-2 text-lg font-bold transition-all relative ${activeTab === "live"
+            ? "text-white"
+            : "text-slate-500 hover:text-slate-400"
+            }`}
+        >
+          <div className="flex items-center gap-3">
+            {activeTab === "live" && (
+              <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            )}
+            Live Incidents
+          </div>
+          {activeTab === "live" && (
+            <div className="absolute bottom-[-1px] left-0 w-full h-1 bg-red-500 rounded-t-full"></div>
+          )}
+        </button>
 
-      {/* Tabs Removed - Enforcing Citizen View Only */}
+        <button
+          onClick={() => setActiveTab("history")}
+          className={`pb-4 px-2 text-lg font-bold transition-all relative ${activeTab === "history"
+            ? "text-white"
+            : "text-slate-500 hover:text-slate-400"
+            }`}
+        >
+          Incident History
+          {activeTab === "history" && (
+            <div className="absolute bottom-[-1px] left-0 w-full h-1 bg-emerald-500 rounded-t-full"></div>
+          )}
+        </button>
+      </div>
 
       {loading ? (
         <div className="py-20 text-center text-slate-500 animate-pulse font-mono">
@@ -48,13 +81,15 @@ export default function AdminIncidents() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {alerts.length === 0 && (
+          {filteredAlerts.length === 0 && (
             <div className="col-span-full py-16 text-center border border-dashed border-slate-800 rounded-2xl text-slate-500">
-              No active citizen reports found.
+              {activeTab === "live"
+                ? "No active citizen reports found."
+                : "No incident history found."}
             </div>
           )}
 
-          {alerts.map((a) => (
+          {filteredAlerts.map((a) => (
             <div
               key={a._id}
               className="bg-slate-800 rounded-xl p-5 border border-slate-700 hover:border-slate-500 transition-all group flex flex-col h-full shadow-lg"
@@ -93,7 +128,6 @@ export default function AdminIncidents() {
                 </div>
               </div>
 
-              {/* Action Button */}
               {/* Action Button */}
               {["COMPLETED", "RESOLVED"].includes(a.status) ? (
                 <div className="mt-auto w-full py-3 rounded-lg bg-slate-800/30 border border-slate-700/30 text-center cursor-default">

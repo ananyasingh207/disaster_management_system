@@ -528,8 +528,47 @@ export default function BroadcastCenter() {
                 // CHANGE: Removed time-based expiry calculation
                 // All broadcasts are considered Active unless backend provides explicit status
                 // This ensures broadcasts remain visible and actionable indefinitely
-                const broadcastStatus = alert.status || "Active";
-                const isActive = broadcastStatus === "Active";
+                const broadcastStatus = alert.status || "ACTIVE";
+                const isActive = broadcastStatus === "ACTIVE";
+
+                // Map 'category' to display type, fallback to 'GENERAL' or 'BROADCAST'
+                // This fixes Issue 1: Alert Type Not Displaying
+                const displayType = alert.category || alert.type || "GENERAL";
+
+                const handleStatusToggle = async () => {
+                  if (activeTab !== "reports") return; // Safety check
+
+                  const newStatus = isActive ? "EXPIRED" : "ACTIVE";
+                  const confirmMsg = isActive
+                    ? "Are you sure you want to EXPIRE this alert? It will show as inactive."
+                    : "Reactivate this alert?";
+
+                  if (!window.confirm(confirmMsg)) return;
+
+                  try {
+                    // Update via new backend endpoint
+                    const res = await api.put(`/admin/alerts/${alert._id}/status`, {
+                      status: newStatus
+                    });
+
+                    // Update local state immediately
+                    setAlerts((prev) =>
+                      prev.map((a) => (a._id === alert._id ? { ...a, status: res.data.status } : a))
+                    );
+
+                    setStatus({
+                      type: "success",
+                      msg: `Alert status updated to ${newStatus}`
+                    });
+
+                  } catch (err) {
+                    console.error("Status Update Failed", err);
+                    setStatus({
+                      type: "error",
+                      msg: "Failed to update status"
+                    });
+                  }
+                };
 
                 return (
                   <div
@@ -579,7 +618,9 @@ export default function BroadcastCenter() {
                         <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
                           <span className="flex items-center gap-1">
                             <span className="font-bold text-slate-400">Type:</span>
-                            <span className="uppercase font-mono">{alert.type}</span>
+                            <span className="uppercase font-mono text-slate-300 bg-slate-800 px-1.5 py-0.5 rounded">
+                              {displayType}
+                            </span>
                           </span>
 
                           {alert.region && (
@@ -598,21 +639,37 @@ export default function BroadcastCenter() {
                         </div>
                       </div>
 
-                      {/* Right: Timestamp */}
-                      <div className="lg:text-right">
-                        <p className="text-xs text-slate-600 font-mono">
-                          {new Date(alert.createdAt).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric"
-                          })}
-                        </p>
-                        <p className="text-xs text-slate-600 font-mono">
-                          {new Date(alert.createdAt).toLocaleTimeString("en-US", {
-                            hour: "2-digit",
-                            minute: "2-digit"
-                          })}
-                        </p>
+                      {/* Right: Actions & Time */}
+                      <div className="flex flex-col items-end gap-3 min-w-[140px]">
+                        <div className="text-right">
+                          <p className="text-xs text-slate-600 font-mono">
+                            {new Date(alert.createdAt).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric"
+                            })}
+                          </p>
+                          <p className="text-xs text-slate-600 font-mono">
+                            {new Date(alert.createdAt).toLocaleTimeString("en-US", {
+                              hour: "2-digit",
+                              minute: "2-digit"
+                            })}
+                          </p>
+                        </div>
+
+                        {/* STATUS TOGGLE BUTTON - FIX ISSUE 2 */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStatusToggle();
+                          }}
+                          className={`px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider transition-all border ${isActive
+                            ? "bg-transparent text-red-500 border-red-500/30 hover:bg-red-500 hover:text-white"
+                            : "bg-transparent text-emerald-500 border-emerald-500/30 hover:bg-emerald-500 hover:text-white"
+                            }`}
+                        >
+                          {isActive ? "Mark as Expired" : "Reactivate Alert"}
+                        </button>
                       </div>
                     </div>
                   </div>

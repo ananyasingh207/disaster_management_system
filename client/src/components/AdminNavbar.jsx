@@ -109,7 +109,7 @@ export default function AdminNavbar() {
       <nav className="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-2">
 
         {/* SOS PANEL */}
-        <NavLink to="/admin" end className={getLinkClass}>
+        <NavLink to="/admin/sos" className={getLinkClass}>
           SOS Control Panel
         </NavLink>
 
