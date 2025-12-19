@@ -6,7 +6,7 @@ class AdminErrorBoundary extends React.Component {
     this.state = {
       hasError: false,
       error: null,
-      
+
       errorInfo: null,
     };
   }
@@ -20,7 +20,7 @@ class AdminErrorBoundary extends React.Component {
     // Log error details for debugging
     console.error('AdminErrorBoundary caught an error:', error);
     console.error('Error info:', errorInfo);
-    
+
     this.setState({
       error,
       errorInfo,
@@ -46,7 +46,7 @@ class AdminErrorBoundary extends React.Component {
           <div className="max-w-2xl w-full bg-slate-900 border border-red-500/30 rounded-2xl p-8 shadow-xl">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center">
-                <span className="text-3xl">⚠️</span>
+                <span className="text-3xl font-bold text-red-500">!</span>
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white mb-1">
@@ -62,7 +62,7 @@ class AdminErrorBoundary extends React.Component {
               <p className="text-red-400 font-mono text-sm mb-2">
                 {this.state.error?.toString() || 'Unknown error'}
               </p>
-              
+
               {process.env.NODE_ENV === 'development' && this.state.errorInfo && (
                 <details className="mt-4">
                   <summary className="text-slate-500 text-xs cursor-pointer hover:text-slate-300 mb-2">

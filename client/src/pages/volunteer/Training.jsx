@@ -1,5 +1,5 @@
 export default function Training() {
-  // 🎥 VIDEO TRAINING MODULES (Updated with working links)
+  // VIDEO TRAINING MODULES (Updated with working links)
   const modules = [
     {
       id: 1,

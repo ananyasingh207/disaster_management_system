@@ -1,13 +1,14 @@
 const mongoose = require("mongoose");
 
+// Schema for One-Time Passwords (OTP)
 const otpSchema = new mongoose.Schema({
   email: { type: String, required: true },
-  
+
   // Stores the 6-digit code
-  otp: { type: String, required: true }, 
-  
+  otp: { type: String, required: true },
+
   // Automatically deletes this document after 300 seconds (5 minutes)
-  createdAt: { type: Date, default: Date.now, index: { expires: 300 } } 
+  createdAt: { type: Date, default: Date.now, index: { expires: 300 } }
 });
 
 module.exports = mongoose.model("Otp", otpSchema);

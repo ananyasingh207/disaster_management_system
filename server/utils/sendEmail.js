@@ -1,24 +1,28 @@
 // --- START OF FILE server/utils/sendEmail.js ---
 const nodemailer = require("nodemailer");
 
+/**
+ * Sends an email using Nodemailer.
+ * @param {Object} options - Email options (email, subject, message, otp)
+ */
 const sendEmail = async (options) => {
-  // 1. Create the transporter with your Gmail credentials
+  // Configure transporter with SMTP credentials
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
-    secure: false, // false for port 587 (STARTTLS)
+    secure: false, // Use STARTTLS (port 587)
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
     },
   });
 
-  // 2. Define the email layout
+  // Define email content
   const message = {
     from: process.env.EMAIL_FROM,
     to: options.email,
     subject: options.subject,
-    text: options.message, // Plain text fallback
+    text: options.message,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
         <h2 style="color: #007bff; text-align: center;">Volunteer Verification</h2>
@@ -35,7 +39,7 @@ const sendEmail = async (options) => {
     `,
   };
 
-  // 3. Send the email
+  // Send the email
   await transporter.sendMail(message);
 };
 

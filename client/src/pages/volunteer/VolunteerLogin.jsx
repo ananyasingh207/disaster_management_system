@@ -54,13 +54,13 @@ export default function VolunteerLogin() {
         {/* ERROR MESSAGE */}
         {msg && (
           <div className="p-3 mb-6 bg-red-500/10 border-l-4 border-red-500/40 text-red-400 text-xs font-bold rounded-md shadow-sm shadow-red-900/10">
-            ⚠ {msg}
+            {msg}
           </div>
         )}
 
         {/* FORM */}
         <form onSubmit={submit} className="space-y-6">
-          
+
           <div>
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">
               Volunteer Email
@@ -106,16 +106,16 @@ export default function VolunteerLogin() {
 
         {/* APPLY LINK */}
         <div className="mt-8 pt-6 border-t border-white/5 text-center">
-        <p className="text-sm text-slate-500">
-          New to the force?
-          <Link
-            to="/volunteer/register"
-            className="text-red-400 hover:text-white font-bold ml-2 transition-colors"
-          >
-            Register as a Volunteer
-          </Link>
-        </p>
-      </div>
+          <p className="text-sm text-slate-500">
+            New to the force?
+            <Link
+              to="/volunteer/register"
+              className="text-red-400 hover:text-white font-bold ml-2 transition-colors"
+            >
+              Register as a Volunteer
+            </Link>
+          </p>
+        </div>
 
 
       </div>

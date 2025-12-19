@@ -4,7 +4,7 @@ const api = axios.create({
   baseURL: "http://localhost:5000/api", // Ensure port matches your backend
 });
 
-// 🔹 AUTOMATICALLY ATTACH TOKEN TO EVERY REQUEST
+// Automatically attach token to every request
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token"); // Get token from storage
@@ -21,6 +21,5 @@ api.interceptors.request.use(
 export function logout() {
   localStorage.removeItem("token");
 }
-
 
 export default api;

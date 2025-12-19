@@ -10,7 +10,7 @@ export default function NotFound() {
 
       {/* Main Content Layer */}
       <div className="relative z-10">
-        
+
         {/* Large Background Number */}
         <h1 className="text-[10rem] md:text-[18rem] font-black text-slate-800/30 leading-none select-none tracking-tighter">
           404
@@ -18,7 +18,7 @@ export default function NotFound() {
 
         {/* Foreground Message (Centered over the number) */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full">
-          
+
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 mb-6 backdrop-blur-sm animate-pulse">
             <span className="w-2 h-2 rounded-full bg-red-500"></span>
             <span className="text-red-500 font-bold tracking-widest uppercase text-xs">Signal Lost</span>
@@ -27,7 +27,7 @@ export default function NotFound() {
           <h2 className="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight">
             Coordinates Not Found
           </h2>
-          
+
           <p className="text-slate-400 max-w-lg mx-auto mb-8 text-sm md:text-base font-medium">
             The sector you are trying to access does not exist or has been moved. Return to safety immediately.
           </p>
@@ -36,7 +36,7 @@ export default function NotFound() {
             to="/"
             className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/25 transform hover:scale-105"
           >
-            <span>🏠</span> RETURN TO BASE
+            RETURN TO BASE
           </Link>
         </div>
       </div>

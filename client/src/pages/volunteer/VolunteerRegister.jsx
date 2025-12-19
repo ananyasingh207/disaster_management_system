@@ -26,9 +26,9 @@ export default function VolunteerRegister() {
     try {
       await api.post("/volunteer/auth/send-otp", { email: form.email });
       setOtpSent(true);
-      setMsg("✓ OTP Sent Successfully");
+      setMsg("OTP Sent Successfully");
     } catch {
-      setMsg("⚠ Failed to send OTP");
+      setMsg("Failed to send OTP");
     }
   };
 
@@ -39,10 +39,10 @@ export default function VolunteerRegister() {
         ...form,
         skills: form.skills.split(",").map((s) => s.trim())
       });
-      setMsg("✓ Registration Successful. Awaiting Approval...");
+      setMsg("Registration Successful. Awaiting Approval...");
       setTimeout(() => navigate("/volunteer/login"), 2000);
     } catch {
-      setMsg("⚠ Registration Error");
+      setMsg("Registration Error");
     }
   };
 

@@ -1,26 +1,6 @@
-// const IncidentNote = require("../models/IncidentNote");
-
-// exports.addNote = async (req, res) => {
-//   const note = await IncidentNote.create({
-//     incidentId: req.body.incidentId,
-//     content: req.body.content,
-//     author: req.user.name,
-//   });
-
-//   res.json(note);
-// };
-
-// exports.getNotes = async (req, res) => {
-//   const notes = await IncidentNote.find({
-//     incidentId: req.params.incidentId,
-//   }).sort({ createdAt: -1 });
-
-//   res.json(notes);
-// };
-
-
 const IncidentNote = require("../models/IncidentNote");
 
+// Add a note to an incident
 exports.addNote = async (req, res) => {
   try {
     const { incident, note, incidentModel } = req.body;
@@ -35,7 +15,7 @@ exports.addNote = async (req, res) => {
       author: {
         id: req.user._id,
         name: req.user.name,
-        role: req.user.roleType || "VOLUNTEER", // Adjust based on user
+        role: req.user.roleType || "VOLUNTEER",
       },
     });
 
@@ -46,6 +26,7 @@ exports.addNote = async (req, res) => {
   }
 };
 
+// Get notes for an incident
 exports.getNotes = async (req, res) => {
   try {
     const notes = await IncidentNote.find({ incident: req.params.incidentId })

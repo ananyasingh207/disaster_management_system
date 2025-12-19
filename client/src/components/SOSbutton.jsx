@@ -10,7 +10,7 @@ export default function SOSButton() {
     setStatus("");
 
     if (!navigator.geolocation) {
-      setStatus("⚠ Unable to access location.");
+      setStatus("Unable to access location.");
       setLoading(false);
       return;
     }
@@ -26,9 +26,9 @@ export default function SOSButton() {
             timestamp: new Date().toISOString(),
           });
 
-          setStatus("🚨 SOS Sent!");
+          setStatus("SOS Sent!");
         } catch (err) {
-          setStatus("❌ Failed to send SOS");
+          setStatus("Failed to send SOS");
         }
 
         setLoading(false);
@@ -37,7 +37,7 @@ export default function SOSButton() {
         setTimeout(() => setStatus(""), 4000);
       },
       () => {
-        setStatus("⚠ Location permission denied.");
+        setStatus("Location permission denied.");
         setLoading(false);
       }
     );

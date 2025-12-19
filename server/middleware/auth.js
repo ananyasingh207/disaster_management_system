@@ -12,16 +12,14 @@ exports.protect = async (req, res, next) => {
     const token = raw.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // 🔹 FIX: Check for the Hardcoded Admin ID FIRST
-    // If we don't do this, the database query below will fail
+    // Bypass database check for hardcoded admin ID
     if (decoded.id === "admin-fixed-id") {
       req.user = { id: "admin-fixed-id", role: "admin" };
       req.role = "admin";
-      return next(); // Skip database check and proceed
+      return next();
     }
-    // -----------------------------------------------------
 
-    // Database Lookup (Only runs for Citizens/Volunteers)
+    // Retrieve user from database based on ID
     let user =
       (await Citizen.findById(decoded.id)) ||
       (await Volunteer.findById(decoded.id)) ||
@@ -31,7 +29,7 @@ exports.protect = async (req, res, next) => {
 
     req.user = user;
 
-    // Assign roles dynamically based on the found user
+    // Assign roles dynamically
     if (user.role === "admin") req.role = "admin";
     else if (user.skills || user.role === "volunteer") req.role = "volunteer";
     else req.role = "citizen";

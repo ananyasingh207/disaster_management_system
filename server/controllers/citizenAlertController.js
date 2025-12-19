@@ -1,30 +1,13 @@
-// const CitizenAlert = require("../models/CitizenAlert");
-
-// exports.getCitizenAlerts = async (req, res) => {
-//   try {
-//     const alerts = await CitizenAlert.find({}).sort({ createdAt: -1 });
-
-//     res.json(alerts);
-//   } catch {
-//     res.status(500).json({ message: "Server error" });
-//   }
-// };
-
-
 const CitizenAlert = require("../models/CitizenAlert");
 
 /**
- * GET /api/citizen/alerts
- * Fetch ALL active alerts for citizens (HARD RESET - No Filtering)
+ * Fetch all active alerts for citizens.
+ * Filters based on audience matching the user role or "ALL".
  */
 exports.getCitizenAlerts = async (req, res) => {
   try {
-    // Determine user role from auth middleware
     const userRole = req.role ? req.role.toUpperCase() : "CITIZEN";
 
-    // Filter logic:
-    // 1. Audience is "ALL" (Global broadcast)
-    // 2. Audience matches the user's role (e.g., "CITIZEN" or "VOLUNTEER")
     const query = {
       audience: { $in: ["ALL", userRole] }
     };

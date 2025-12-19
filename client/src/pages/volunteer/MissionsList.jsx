@@ -78,22 +78,20 @@ export default function MissionsList() {
       <div className="flex gap-4 mb-8">
         <button
           onClick={() => setActiveTab("active")}
-          className={`px-6 py-2.5 rounded-lg font-bold text-sm transition-all ${
-            activeTab === "active"
+          className={`px-6 py-2.5 rounded-lg font-bold text-sm transition-all ${activeTab === "active"
               ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
               : "bg-slate-800 text-slate-400 hover:bg-slate-700"
-          }`}
+            }`}
         >
           ACTIVE OPS ({activeMissions.length})
         </button>
 
         <button
           onClick={() => setActiveTab("completed")}
-          className={`px-6 py-2.5 rounded-lg font-bold text-sm transition-all ${
-            activeTab === "completed"
+          className={`px-6 py-2.5 rounded-lg font-bold text-sm transition-all ${activeTab === "completed"
               ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/20"
               : "bg-slate-800 text-slate-400 hover:bg-slate-700"
-          }`}
+            }`}
         >
           COMPLETED LOG ({completedMissions.length})
         </button>
@@ -109,11 +107,10 @@ export default function MissionsList() {
             return (
               <div
                 key={m._id}
-                className={`bg-slate-900 border ${
-                  isCritical
+                className={`bg-slate-900 border ${isCritical
                     ? "border-red-500/50 shadow-red-900/20"
                     : "border-slate-800"
-                } rounded-xl p-6 shadow-xl relative overflow-hidden transition-all hover:border-slate-700`}
+                  } rounded-xl p-6 shadow-xl relative overflow-hidden transition-all hover:border-slate-700`}
               >
                 {/* Emergency tag */}
                 {isCritical && (
@@ -126,11 +123,10 @@ export default function MissionsList() {
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <span
-                      className={`text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider mb-2 inline-block ${
-                        isCritical
+                      className={`text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider mb-2 inline-block ${isCritical
                           ? "bg-red-500/10 text-red-500 border border-red-500/20"
                           : "bg-blue-500/10 text-blue-400 border border-blue-500/20"
-                      }`}
+                        }`}
                     >
                       {m.severity}
                     </span>
@@ -146,7 +142,7 @@ export default function MissionsList() {
 
                   {m.status === "PENDING_REVIEW" && (
                     <span className="bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-3 py-1 rounded-lg text-xs font-bold animate-pulse">
-                      ⏳ WAITING FOR ADMIN
+                      WAITING FOR ADMIN
                     </span>
                   )}
                 </div>
@@ -158,7 +154,7 @@ export default function MissionsList() {
                 {/* LOCATION */}
                 <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-slate-950/50 p-4 rounded-xl border border-slate-800 mb-6">
                   <span className="text-sm font-mono text-slate-400 flex items-center gap-2">
-                    📍 {m.location || "Classified"}
+                    {m.location || "Classified"}
                   </span>
                   <button
                     onClick={() => openGPS(m.location || "India")}
@@ -208,11 +204,6 @@ export default function MissionsList() {
               key={m._id}
               className="bg-slate-900 border border-emerald-500/30 rounded-xl p-6 shadow-lg relative overflow-hidden group"
             >
-              {/* Watermark */}
-              <div className="absolute -right-6 -bottom-6 text-9xl text-emerald-500/5 rotate-[-15deg] group-hover:text-emerald-500/10 transition-colors">
-                ✓
-              </div>
-
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-bold text-white">{m.title}</h3>
                 <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-lg">

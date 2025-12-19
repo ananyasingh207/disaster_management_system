@@ -1,31 +1,6 @@
-// const Report = require("../models/Report");
-
-// // Create New Report
-// exports.createReport = async (req, res) => {
-//   try {
-//     const report = await Report.create({
-//       ...req.body,
-//       reportedBy: req.user._id // Taken from the logged-in token
-//     });
-//     res.status(201).json(report);
-//   } catch (err) {
-//     res.status(500).json({ message: "Failed to submit report" });
-//   }
-// };
-
-// // Get History for Logged In User
-// exports.getMyReports = async (req, res) => {
-//   try {
-//     const reports = await Report.find({ reportedBy: req.user._id })
-//                                 .sort({ createdAt: -1 });
-//     res.json(reports);
-//   } catch (err) {
-//     res.status(500).json({ message: "Failed to fetch history" });
-//   }
-// };
-
 const Report = require("../models/Report");
 
+// Create Report
 exports.createReport = async (req, res) => {
   try {
     const { type, description, location, missionId } = req.body;
@@ -35,7 +10,7 @@ exports.createReport = async (req, res) => {
     }
 
     const report = await Report.create({
-      mission: missionId || null, // Updated to 'mission' ref
+      mission: missionId || null,
       type,
       description,
       location,
@@ -45,11 +20,12 @@ exports.createReport = async (req, res) => {
 
     res.status(201).json({ message: "Report submitted successfully", report });
   } catch (err) {
-    console.error("❌ Create Report Error:", err);
+    console.error("Create Report Error:", err);
     res.status(500).json({ message: "Failed to submit report" });
   }
 };
 
+// Get My Reports
 exports.getMyReports = async (req, res) => {
   try {
     const reports = await Report.find({ reportedBy: req.user._id })
@@ -57,7 +33,7 @@ exports.getMyReports = async (req, res) => {
       .lean();
     res.json(reports);
   } catch (err) {
-    console.error("❌ Get My Reports Error:", err);
+    console.error("Get My Reports Error:", err);
     res.status(500).json({ message: "Failed to fetch report history" });
   }
 };

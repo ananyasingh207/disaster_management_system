@@ -23,9 +23,9 @@ export default function CitizenRegister() {
     try {
       await api.post("/citizen/otp/send", { email: form.email });
       setOtpSent(true);
-      setMsg("✓ OTP Sent");
+      setMsg("Code Sent");
     } catch {
-      setMsg("⚠ Failed to send OTP");
+      setMsg("Failed to send code");
     }
   };
 
@@ -33,10 +33,10 @@ export default function CitizenRegister() {
     e.preventDefault();
     try {
       await api.post("/citizen/auth/register", form);
-      setMsg("✓ Success! Redirecting...");
+      setMsg("Success! Redirecting...");
       setTimeout(() => navigate("/citizen/login"), 1500);
     } catch (err) {
-      setMsg("⚠ Registration Failed");
+      setMsg("Registration Failed");
     }
   };
 
@@ -51,7 +51,7 @@ export default function CitizenRegister() {
 
         {/* HEADER */}
         <div className="text-center mb-10">
-          
+
           {/* Top Red Line (global theme) */}
           <div className="w-12 h-1 bg-red-600 mb-5 opacity-80 mx-auto"></div>
 
@@ -73,7 +73,7 @@ export default function CitizenRegister() {
 
         {/* FORM */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          
+
           {/* NAME */}
           <input
             name="name"
@@ -152,10 +152,9 @@ export default function CitizenRegister() {
             type="submit"
             disabled={!otpSent}
             className={`w-full py-3.5 rounded-lg font-bold text-sm shadow-lg transition-all 
-              ${
-                otpSent
-                  ? "bg-red-600 hover:bg-red-500 text-white"
-                  : "bg-slate-800 text-slate-500 cursor-not-allowed"
+              ${otpSent
+                ? "bg-red-600 hover:bg-red-500 text-white"
+                : "bg-slate-800 text-slate-500 cursor-not-allowed"
               }`}
           >
             {otpSent ? "CREATE ACCOUNT" : "VERIFY EMAIL FIRST"}

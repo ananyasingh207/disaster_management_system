@@ -1,21 +1,9 @@
-// const mongoose = require("mongoose");
-
-// const IncidentNoteSchema = new mongoose.Schema(
-//   {
-//     incidentId: String,
-//     content: String,
-//     author: String
-//   },
-//   { timestamps: true }
-// );
-
-// module.exports = mongoose.model("IncidentNote", IncidentNoteSchema);
-
 const mongoose = require("mongoose");
 
+// Schema for Incident Notes (Admin/Volunteer internal notes)
 const IncidentNoteSchema = new mongoose.Schema(
   {
-    // 🔗 Which incident this note belongs to
+    // Reference to the incident
     incident: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -28,14 +16,14 @@ const IncidentNoteSchema = new mongoose.Schema(
       enum: ["CitizenIncident", "Report", "SOS"],
     },
 
-    // 📝 Actual note content
+    // Note content
     note: {
       type: String,
       required: true,
       trim: true,
     },
 
-    // 👤 WHO wrote the note
+    // Author of the note
     author: {
       id: {
         type: mongoose.Schema.Types.ObjectId,
